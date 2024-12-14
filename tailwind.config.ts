@@ -11,8 +11,8 @@ export default {
     extend: {
       fontSize: {
         // Add custom font sizes
-        base: '19px', // Increase base font size
-        lg: '18px',
+        base: '18px', // Increase base font size
+        lg: '19px',
         xl: '20px',
         '2xl': '24px',
       },

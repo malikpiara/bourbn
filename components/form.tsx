@@ -1,6 +1,6 @@
 'use client';
 import * as React from 'react';
-
+import { Checkbox } from '@/components/ui/checkbox';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
@@ -26,11 +26,22 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+
 const formSchema = z.object({
   name: z.string().min(2, {
     message: 'O nome deve ter pelo menos 2 caracteres.',
   }),
-  notes: z.string(),
+  storeId: z.string({
+    required_error: 'Por favor selecione uma loja.',
+  }),
+  notes: z.string().optional(),
   orderNumber: z.coerce.number().min(4, {
     message: 'O número da encomenda deve ter pelo menos 4 caracteres.',
   }),
@@ -40,8 +51,11 @@ const formSchema = z.object({
   email: z.string().email().min(5, {
     message: 'O nome deve ter pelo menos 5 caracteres.',
   }),
-  phoneNumber: z.string().min(9, {
+  phoneNumber: z.string().length(9, {
     message: 'O número deve ter pelo menos 9 caracteres.',
+  }),
+  nif: z.string().length(9, {
+    message: 'O número de contribuinte tem 9 caracteres.',
   }),
   address1: z.string().min(5, {
     message: 'A morada deve ter pelo menos 5 caracteres.',
@@ -55,6 +69,7 @@ const formSchema = z.object({
   city: z.string().min(5, {
     message: 'A cidade deve ter pelo menos 5 caracteres.',
   }),
+  elevator: z.boolean().default(false).optional(),
 });
 
 export function SalesForm() {
@@ -67,6 +82,7 @@ export function SalesForm() {
       dob: new Date(),
       email: '',
       phoneNumber: '',
+      nif: '',
       address1: '',
       address2: '',
       postalCode: '',
@@ -148,6 +164,29 @@ export function SalesForm() {
 
         <FormField
           control={form.control}
+          name='storeId'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Loja</FormLabel>
+              <Select onValueChange={field.onChange} defaultValue={field.value}>
+                <FormControl>
+                  <SelectTrigger>
+                    <SelectValue placeholder='Selecione a loja onde a venda foi executada' />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value='1'>1 - Clássica</SelectItem>
+                  <SelectItem value='3'>3 - Moderna</SelectItem>
+                  <SelectItem value='6'>6 - Iluminação</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
           name='notes'
           render={({ field }) => (
             <FormItem>
@@ -175,7 +214,7 @@ export function SalesForm() {
             <FormItem>
               <FormLabel>Nome</FormLabel>
               <FormControl>
-                <Input placeholder='Joana Dias' autoComplete='off' {...field} />
+                <Input autoComplete='off' {...field} />
               </FormControl>
               <FormDescription>
                 Escreve o primeiro e último nome, ou o nome da empresa.
@@ -192,11 +231,7 @@ export function SalesForm() {
             <FormItem>
               <FormLabel>Email do cliente</FormLabel>
               <FormControl>
-                <Input
-                  placeholder='joana.dias@gmail.com'
-                  autoComplete='off'
-                  {...field}
-                />
+                <Input autoComplete='off' {...field} />
               </FormControl>
               <FormDescription>
                 O cliente vai receber notificações através deste endereço.
@@ -217,6 +252,20 @@ export function SalesForm() {
               <FormDescription>
                 Pode ser usado para auxiliar a entrega.
               </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name='nif'
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel>Número de contribuinte</FormLabel>
+              <FormControl>
+                <Input autoComplete='off' {...field} />
+              </FormControl>
               <FormMessage />
             </FormItem>
           )}
@@ -287,6 +336,28 @@ export function SalesForm() {
                 <Input autoComplete='off' {...field} />
               </FormControl>
               <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <FormField
+          control={form.control}
+          name='elevator'
+          render={({ field }) => (
+            <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
+              <FormControl>
+                <Checkbox
+                  checked={field.value}
+                  onCheckedChange={field.onChange}
+                />
+              </FormControl>
+              <div className='space-y-1 leading-none'>
+                <FormLabel>Há elevador</FormLabel>
+                <FormDescription>
+                  Se o elevador não estiver operacional, por favor deixe a caixa
+                  vazia.
+                </FormDescription>
+              </div>
             </FormItem>
           )}
         />
