@@ -50,7 +50,7 @@ export function SalesForm() {
     defaultValues: {
       name: '',
       orderNumber: 6111,
-      dob: Date(),
+      dob: new Date(),
       email: '',
       phoneNumber: '',
     },
