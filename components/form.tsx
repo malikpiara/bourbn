@@ -1,18 +1,10 @@
 'use client';
 import * as React from 'react';
-import { Checkbox } from '@/components/ui/checkbox';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { z } from 'zod';
 import { format } from 'date-fns';
-import { Calendar as CalendarIcon } from 'lucide-react';
+import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
 import { Button } from '@/components/ui/button';
 import {
   Form,
@@ -25,7 +17,13 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-
+import { Checkbox } from '@/components/ui/checkbox';
+import { Calendar } from '@/components/ui/calendar';
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from '@/components/ui/popover';
 import {
   Select,
   SelectContent,
@@ -33,48 +31,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-
-const formSchema = z.object({
-  name: z.string().min(2, {
-    message: 'O nome deve ter pelo menos 2 caracteres.',
-  }),
-  storeId: z.string({
-    required_error: 'Por favor selecione uma loja.',
-  }),
-  notes: z.string().optional(),
-  orderNumber: z.coerce.number().min(4, {
-    message: 'O número da encomenda deve ter pelo menos 4 caracteres.',
-  }),
-  dob: z.date({
-    required_error: 'A date of birth is required.',
-  }),
-  email: z.string().email().min(5, {
-    message: 'O nome deve ter pelo menos 5 caracteres.',
-  }),
-  phoneNumber: z.string().length(9, {
-    message: 'O número deve ter pelo menos 9 caracteres.',
-  }),
-  nif: z.string().length(9, {
-    message: 'O número de contribuinte tem 9 caracteres.',
-  }),
-  address1: z.string().min(5, {
-    message: 'A morada deve ter pelo menos 5 caracteres.',
-  }),
-  address2: z.string().min(5, {
-    message: 'A morada deve ter pelo menos 5 caracteres.',
-  }),
-  postalCode: z.string().min(5, {
-    message: 'O código postal deve ter 5 caracteres.',
-  }),
-  city: z.string().min(5, {
-    message: 'A cidade deve ter pelo menos 5 caracteres.',
-  }),
-  elevator: z.boolean().default(false).optional(),
-});
+import { DynamicTable } from './table';
+import { formSchema, FormValues } from '@/lib/schema';
 
 export function SalesForm() {
-  // 1. Define your form.
-  const form = useForm<z.infer<typeof formSchema>>({
+  const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       name: '',
@@ -87,13 +48,11 @@ export function SalesForm() {
       address2: '',
       postalCode: '',
       city: '',
+      tableEntries: [],
     },
   });
 
-  // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
+  function onSubmit(values: FormValues) {
     console.log(values);
   }
 
@@ -105,7 +64,6 @@ export function SalesForm() {
         </h2>
         <FormField
           control={form.control}
-          disabled
           name='orderNumber'
           render={({ field }) => (
             <FormItem>
@@ -180,6 +138,25 @@ export function SalesForm() {
                   <SelectItem value='6'>6 - Iluminação</SelectItem>
                 </SelectContent>
               </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
+        <h2 className='scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"'>
+          Produtos
+        </h2>
+        <FormField
+          control={form.control}
+          name='tableEntries'
+          render={() => (
+            <FormItem>
+              <FormControl>
+                <DynamicTable form={form} />
+              </FormControl>
+              <FormDescription>
+                Adicione os produtos da encomenda aqui.
+              </FormDescription>
               <FormMessage />
             </FormItem>
           )}
