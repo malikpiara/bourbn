@@ -91,7 +91,13 @@ export function DynamicTable({ form }: DynamicTableProps) {
       <Button
         type='button'
         onClick={() =>
-          append({ id: fields.length, productName: '', quantity: 1, price: 0 })
+          append({
+            id: fields.length,
+            productName: '',
+            designation: '',
+            quantity: 1,
+            price: 0,
+          })
         }
         className='flex items-center gap-2'
       >
