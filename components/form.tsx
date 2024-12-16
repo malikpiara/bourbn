@@ -53,7 +53,13 @@ export function SalesForm() {
   });
 
   function onSubmit(values: FormValues) {
-    console.log(values);
+    // Add validation logging
+    const result = formSchema.safeParse(values);
+    if (!result.success) {
+      console.error('Validation Errors:', result.error.errors);
+      return;
+    }
+    console.log('Form Submitted:', values);
   }
 
   return (

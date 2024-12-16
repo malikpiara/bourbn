@@ -59,7 +59,7 @@ export function DynamicTable({ form }: DynamicTableProps) {
               <TableCell>
                 <Input
                   {...form.register(
-                    `tableEntries.${index}.productName` as const
+                    `tableEntries.${index}.designation` as const
                   )}
                   placeholder='Designação'
                 />
