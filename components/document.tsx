@@ -10,19 +10,15 @@ import {
 } from '@react-pdf/renderer';
 
 Font.register({
-  family: 'Roboto',
+  family: 'Geist',
   fonts: [
     {
-      src: 'https://fonts.gstatic.com/s/roboto/v16/zN7GBFwfMP4uA6AR0HCoLQ.ttf',
+      src: '/fonts/Geist-Regular.ttf',
       fontWeight: 400, // normal
     },
     {
-      src: 'https://fonts.gstatic.com/s/roboto/v16/KFOlCnqEu92Fr1MmEU9fBBc9.ttf',
+      src: '/fonts/Geist-Medium.ttf',
       fontWeight: 700, // bold
-    },
-    {
-      src: 'https://fonts.gstatic.com/s/roboto/v16/KFOlCnqEu92Fr1MmWUlfBBc9.ttf',
-      fontWeight: 800, // extrabold
     },
   ],
 });
@@ -31,7 +27,7 @@ Font.register({
 const styles = StyleSheet.create({
   page: {
     padding: 30,
-    fontFamily: 'Roboto',
+    fontFamily: 'Geist',
     fontSize: 10,
     lineHeight: 1.5,
   },
