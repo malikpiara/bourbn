@@ -337,7 +337,7 @@ export const MyDocument = () => {
             <View style={styles.signatureLine} />
           </View>
           <View style={styles.signatureBlock}>
-            <Text style={styles.signatureHeaders}>A firma</Text>
+            <Text style={styles.signatureHeaders}>Pela firma</Text>
             <View style={styles.signatureLine} />
           </View>
         </View>

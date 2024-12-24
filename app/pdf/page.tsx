@@ -1,15 +1,31 @@
 'use client';
 import React from 'react';
-import { PDFViewer, PDFDownloadLink } from '@react-pdf/renderer';
-import { MyDocument } from '@/components/document';
+import dynamic from 'next/dynamic';
+
+const PdfDownloadButton = dynamic(
+  () =>
+    import('../../components/PdfDownloadButton').then(
+      (mod) => mod.PdfDownloadButton
+    ),
+  {
+    ssr: false,
+    loading: () => <p>Loading...</p>,
+  }
+);
+
+const PdfViewer = dynamic(
+  () => import('../../components/PdfViewer').then((mod) => mod.PdfViewer),
+  {
+    ssr: false,
+    loading: () => <p>Loading PDF viewer...</p>,
+  }
+);
 
 export default function PDF() {
   return (
     <>
-      <PDFDownloadLink document={<MyDocument />}>DOWNLOAD</PDFDownloadLink>
-      <PDFViewer width={1100} height={2000}>
-        <MyDocument />
-      </PDFViewer>
+      <PdfDownloadButton />
+      <PdfViewer />
     </>
   );
 }
