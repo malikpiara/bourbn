@@ -112,6 +112,23 @@ const styles = StyleSheet.create({
     color: '#666',
   },
 
+  footerCompanyInfo: {
+    position: 'absolute',
+    bottom: 30,
+    left: 20,
+    fontSize: 8,
+    textAlign: 'center',
+    color: '#666',
+  },
+
+  moreDetailsSection: {
+    flexDirection: 'row',
+  },
+
+  moreDetailsNotes: {
+    padding: '10px',
+  },
+
   transferDetails: {
     marginTop: '20px',
     padding: '10px',
@@ -220,12 +237,14 @@ const styles = StyleSheet.create({
     fontSize: 10,
   },
   cellText: {
-    height: 10,
+    height: 8,
   },
 });
 
 // Create Document Component
 export const MyDocument = () => {
+  const elevator = true;
+  const hasNIF = false;
   return (
     <Document>
       <Page size='A4' style={styles.page}>
@@ -245,6 +264,7 @@ export const MyDocument = () => {
         </View>
 
         {/* Invoice Details */}
+
         <View style={styles.invoiceDetails}>
           <View style={styles.customerInfo}>
             <Text>Sr.(a) Malik Piara</Text>
@@ -252,6 +272,12 @@ export const MyDocument = () => {
             <Text>1500-463</Text>
             <Text>Lisboa, Portugal</Text>
           </View>
+
+          {hasNIF && (
+            <View>
+              <Text>NIF: 000 000 000</Text>
+            </View>
+          )}
         </View>
 
         {/* Table Header */}
@@ -292,12 +318,23 @@ export const MyDocument = () => {
           </View>
         </View>
 
-        <View style={styles.deliveryAddressSection}>
-          <Text style={styles.deliveryAddressTitle}>Local de Entrega</Text>
-          <View>
-            <Text style={styles.deliveryAddressValue}>
-              Largo Monsenhor Dalgado 12, 3dto
-            </Text>
+        <View style={styles.moreDetailsSection}>
+          <View style={styles.deliveryAddressSection}>
+            <Text style={styles.deliveryAddressTitle}>Local de Entrega</Text>
+            <View>
+              <Text style={styles.deliveryAddressValue}>
+                Largo Monsenhor Dalgado 12, 3dto
+              </Text>
+            </View>
+          </View>
+
+          <View style={styles.moreDetailsNotes}>
+            {!elevator && (
+              <>
+                <Text>Notas</Text>
+                <Text>Não há elevador</Text>
+              </>
+            )}
           </View>
         </View>
 
@@ -340,6 +377,9 @@ export const MyDocument = () => {
 
         {/* Footer */}
         <Text style={styles.footer}>Obrigado por confiar na Octosólido.</Text>
+        <Text style={styles.footerCompanyInfo}>
+          Octosólido2, LDA. NIF: 513 579 559
+        </Text>
       </Page>
     </Document>
   );
