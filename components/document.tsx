@@ -252,6 +252,31 @@ const styles = StyleSheet.create({
 
 // Create Document Component
 export const MyDocument = () => {
+  const company = {
+    company: {
+      designacaoSocial: 'Octosólido2, LDA',
+      NIF: '513 579 559',
+    },
+  };
+  const customer = {
+    customer: {
+      name: 'Malik Piara',
+      address1: 'Largo Monsenhor Dalgado 12',
+      address2: '3dto',
+      postalCode: '1500-463',
+      city: 'Lisboa, Portugal',
+      addressHasElevator: true,
+      nif: '000 000 000',
+    },
+  };
+  const order = {
+    order: {
+      date: '17 de Dezembro de 2024',
+      id: '17308',
+    },
+  };
+  const storeId = 'OCT 1';
+  const currentVAT = '23%';
   const elevator = true;
   const hasNIF = false;
   return (
@@ -267,8 +292,10 @@ export const MyDocument = () => {
           </View>
           <View style={styles.headerRight}>
             <Text style={styles.invoiceTitle}>Encomenda</Text>
-            <Text>Número 17308 / OCT 1</Text>
-            <Text>17 de Dezembro de 2024</Text>
+            <Text>
+              Número {order.order.id} / {storeId}
+            </Text>
+            <Text>{order.order.date}</Text>
           </View>
         </View>
 
@@ -276,10 +303,10 @@ export const MyDocument = () => {
 
         <View style={styles.invoiceDetails}>
           <View style={styles.customerInfo}>
-            <Text>Sr.(a) Malik Piara</Text>
-            <Text>Largo Monsenhor Dalgado 12, 3dto</Text>
-            <Text>1500-463</Text>
-            <Text>Lisboa, Portugal</Text>
+            <Text>Sr.(a) {customer.customer.name}</Text>
+            <Text>{`${customer.customer.address1}, ${customer.customer.address2}`}</Text>
+            <Text>{customer.customer.postalCode}</Text>
+            <Text>{customer.customer.city}</Text>
           </View>
 
           {hasNIF && (
@@ -310,7 +337,7 @@ export const MyDocument = () => {
         </View>
 
         <View style={styles.totalSection}>
-          <Text>IVA incluido à taxa em vigor (23%)</Text>
+          <Text>IVA incluido à taxa em vigor ({currentVAT})</Text>
           <Text style={styles.totalLabel}>Total:</Text>
           <Text style={styles.totalAmount}>€123.00</Text>
         </View>
@@ -332,7 +359,10 @@ export const MyDocument = () => {
             <Text style={styles.deliveryAddressTitle}>Local de Entrega</Text>
             <View>
               <Text style={styles.deliveryAddressValue}>
-                Largo Monsenhor Dalgado 12, 3dto
+                {`${customer.customer.address1}, ${customer.customer.address2}`}
+              </Text>
+              <Text style={styles.deliveryAddressValue}>
+                {customer.customer.postalCode}
               </Text>
             </View>
           </View>
@@ -393,7 +423,7 @@ export const MyDocument = () => {
 
           <Text style={styles.footer}>Obrigado por confiar na Octosólido.</Text>
           <Text style={styles.footerCompanyInfo}>
-            Octosólido2, LDA | NIF: 513 579 559
+            {`${company.company.designacaoSocial} | NIF: ${company.company.NIF}`}
           </Text>
         </View>
       </Page>
