@@ -44,7 +44,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-end', // This will right-align the text
   },
   logo: {
-    width: 130, // Adjust width as needed
+    width: 140, // Adjust width as needed
   },
   companyInfo: {
     fontSize: 12,
@@ -107,6 +107,15 @@ const styles = StyleSheet.create({
     bottom: 30,
     left: 30,
     right: 30,
+    fontSize: 8,
+    textAlign: 'center',
+    color: '#666',
+  },
+
+  footerRight: {
+    position: 'absolute',
+    bottom: 30,
+    right: 20,
     fontSize: 8,
     textAlign: 'center',
     color: '#666',
@@ -247,7 +256,7 @@ export const MyDocument = () => {
   const hasNIF = false;
   return (
     <Document>
-      <Page size='A4' style={styles.page}>
+      <Page size='A4' style={styles.page} wrap>
         {/* Header */}
         <View style={styles.header}>
           <View style={styles.headerLeft}>
@@ -376,10 +385,17 @@ export const MyDocument = () => {
         </View>
 
         {/* Footer */}
-        <Text style={styles.footer}>Obrigado por confiar na Octosólido.</Text>
-        <Text style={styles.footerCompanyInfo}>
-          Octosólido2, LDA. NIF: 513 579 559
-        </Text>
+        <View
+          fixed
+          style={{ position: 'absolute', bottom: 0, left: 0, right: 0 }}
+        >
+          {/* <Text style={styles.footerRight}>1</Text> TODO: Fix Pagination */}
+
+          <Text style={styles.footer}>Obrigado por confiar na Octosólido.</Text>
+          <Text style={styles.footerCompanyInfo}>
+            Octosólido2, LDA | NIF: 513 579 559
+          </Text>
+        </View>
       </Page>
     </Document>
   );
