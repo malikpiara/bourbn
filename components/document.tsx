@@ -104,7 +104,7 @@ const styles = StyleSheet.create({
   },
   footer: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 10,
     left: 30,
     right: 30,
     fontSize: 8,
@@ -114,7 +114,7 @@ const styles = StyleSheet.create({
 
   footerRight: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 10,
     right: 20,
     fontSize: 8,
     textAlign: 'center',
@@ -123,7 +123,7 @@ const styles = StyleSheet.create({
 
   footerCompanyInfo: {
     position: 'absolute',
-    bottom: 30,
+    bottom: 10,
     left: 20,
     fontSize: 8,
     textAlign: 'center',
@@ -253,32 +253,24 @@ const styles = StyleSheet.create({
 // Create Document Component
 export const MyDocument = () => {
   const company = {
-    company: {
-      designacaoSocial: 'Octosólido2, LDA',
-      NIF: '513 579 559',
-    },
+    designacaoSocial: 'Octosólido2, LDA',
+    NIF: '513 579 559',
   };
   const customer = {
-    customer: {
-      name: 'Malik Piara',
-      address1: 'Largo Monsenhor Dalgado 12',
-      address2: '3dto',
-      postalCode: '1500-463',
-      city: 'Lisboa, Portugal',
-      addressHasElevator: true,
-      nif: '000 000 000',
-    },
+    name: 'Malik Piara',
+    address1: 'Largo Monsenhor Dalgado 12',
+    address2: '3dto',
+    postalCode: '1500-463',
+    city: 'Lisboa, Portugal',
+    addressHasElevator: true,
+    nif: '000 000 000',
   };
   const order = {
-    order: {
-      date: '17 de Dezembro de 2024',
-      id: '17308',
-    },
+    date: '17 de Dezembro de 2024',
+    id: '17308',
   };
   const storeId = 'OCT 1';
   const currentVAT = '23%';
-  const elevator = true;
-  const hasNIF = false;
   return (
     <Document>
       <Page size='A4' style={styles.page} wrap>
@@ -293,9 +285,9 @@ export const MyDocument = () => {
           <View style={styles.headerRight}>
             <Text style={styles.invoiceTitle}>Encomenda</Text>
             <Text>
-              Número {order.order.id} / {storeId}
+              Número {order.id} / {storeId}
             </Text>
-            <Text>{order.order.date}</Text>
+            <Text>{order.date}</Text>
           </View>
         </View>
 
@@ -303,15 +295,15 @@ export const MyDocument = () => {
 
         <View style={styles.invoiceDetails}>
           <View style={styles.customerInfo}>
-            <Text>Sr.(a) {customer.customer.name}</Text>
-            <Text>{`${customer.customer.address1}, ${customer.customer.address2}`}</Text>
-            <Text>{customer.customer.postalCode}</Text>
-            <Text>{customer.customer.city}</Text>
+            <Text>Sr.(a) {customer.name}</Text>
+            <Text>{`${customer.address1}, ${customer.address2}`}</Text>
+            <Text>{customer.postalCode}</Text>
+            <Text>{customer.city}</Text>
           </View>
 
-          {hasNIF && (
+          {customer.nif != '000 000 000' && (
             <View>
-              <Text>NIF: 000 000 000</Text>
+              <Text>NIF: {customer.nif}</Text>
             </View>
           )}
         </View>
@@ -359,16 +351,16 @@ export const MyDocument = () => {
             <Text style={styles.deliveryAddressTitle}>Local de Entrega</Text>
             <View>
               <Text style={styles.deliveryAddressValue}>
-                {`${customer.customer.address1}, ${customer.customer.address2}`}
+                {`${customer.address1}, ${customer.address2}`}
               </Text>
               <Text style={styles.deliveryAddressValue}>
-                {customer.customer.postalCode}
+                {customer.postalCode}
               </Text>
             </View>
           </View>
 
           <View style={styles.moreDetailsNotes}>
-            {!elevator && (
+            {!customer.addressHasElevator && (
               <>
                 <Text>Notas</Text>
                 <Text>Não há elevador</Text>
@@ -423,7 +415,7 @@ export const MyDocument = () => {
 
           <Text style={styles.footer}>Obrigado por confiar na Octosólido.</Text>
           <Text style={styles.footerCompanyInfo}>
-            {`${company.company.designacaoSocial} | NIF: ${company.company.NIF}`}
+            {`${company.designacaoSocial} | NIF: ${company.NIF}`}
           </Text>
         </View>
       </Page>
