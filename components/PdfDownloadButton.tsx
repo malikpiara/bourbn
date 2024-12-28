@@ -1,13 +1,13 @@
 'use client';
 
 import { BlobProvider } from '@react-pdf/renderer';
-import { MyDocument } from '@/components/document';
+import { OrderDocument } from '@/components/documents/OrderDocument';
 import React from 'react';
 import { mockData } from '@/lib/mockData';
 
 export const PdfDownloadButton = () => {
   return (
-    <BlobProvider document={<MyDocument {...mockData} />}>
+    <BlobProvider document={<OrderDocument {...mockData} />}>
       {({ loading, url }) => {
         if (loading) {
           return <button>Loading...</button>;
