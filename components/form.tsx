@@ -40,6 +40,7 @@ import { formSchema, FormValues } from '@/lib/schema';
 export function SalesForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
+    mode: 'onChange',
     defaultValues: {
       name: '',
       orderNumber: 6111,
@@ -54,6 +55,9 @@ export function SalesForm() {
       tableEntries: [],
     },
   });
+
+  // Track form validity - this takes into account your Zod schema
+  const isValid = form.formState.isValid;
 
   // Helper function to trigger the PDF download
   const downloadPdf = (url: string) => {
@@ -77,7 +81,7 @@ export function SalesForm() {
 
   return (
     <BlobProvider document={<OrderDocument {...mockData} />}>
-      {({ url, loading, error }) => (
+      {({ url, error }) => (
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((values) => {
@@ -96,6 +100,7 @@ export function SalesForm() {
                 downloadPdf(url);
               }
             })}
+            autoComplete='off' // Disabling form autofill.
             className='space-y-8'
           >
             <h2 className='scroll-m-20 text-4xl font-extrabold tracking-tight'>
@@ -385,8 +390,8 @@ export function SalesForm() {
               )}
             />
 
-            <Button type='submit' disabled={loading}>
-              {loading ? 'A preparar documento...' : 'Submeter'}
+            <Button type='submit' disabled={!isValid}>
+              Submeter
             </Button>
 
             {error && (
