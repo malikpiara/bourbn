@@ -8,6 +8,7 @@ import {
   Font,
   Image,
 } from '@react-pdf/renderer';
+import { DocumentData } from '@/types/document';
 
 Font.register({
   family: 'Geist',
@@ -251,26 +252,11 @@ const styles = StyleSheet.create({
 });
 
 // Create Document Component
-export const MyDocument = () => {
-  const company = {
-    designacaoSocial: 'Octosólido2, LDA',
-    NIF: '513 579 559',
-  };
-  const customer = {
-    name: 'Malik Piara',
-    address1: 'Largo Monsenhor Dalgado 12',
-    address2: '3dto',
-    postalCode: '1500-463',
-    city: 'Lisboa, Portugal',
-    addressHasElevator: true,
-    nif: '000 000 000',
-  };
-  const order = {
-    date: '17 de Dezembro de 2024',
-    id: '17308',
-  };
-  const storeId = 'OCT 1';
-  const currentVAT = '23%';
+export const MyDocument: React.FC<DocumentData> = ({
+  company,
+  customer,
+  order,
+}) => {
   return (
     <Document>
       <Page size='A4' style={styles.page} wrap>
@@ -285,7 +271,7 @@ export const MyDocument = () => {
           <View style={styles.headerRight}>
             <Text style={styles.invoiceTitle}>Encomenda</Text>
             <Text>
-              Número {order.id} / {storeId}
+              Número {order.id} / {order.storeId}
             </Text>
             <Text>{order.date}</Text>
           </View>
@@ -296,12 +282,12 @@ export const MyDocument = () => {
         <View style={styles.invoiceDetails}>
           <View style={styles.customerInfo}>
             <Text>Sr.(a) {customer.name}</Text>
-            <Text>{`${customer.address1}, ${customer.address2}`}</Text>
-            <Text>{customer.postalCode}</Text>
-            <Text>{customer.city}</Text>
+            <Text>{`${customer.address.address1}, ${customer.address.address2}`}</Text>
+            <Text>{customer.address.postalCode}</Text>
+            <Text>{customer.address.city}</Text>
           </View>
 
-          {customer.nif != '000 000 000' && (
+          {customer.nif && customer.nif !== '000 000 000' && (
             <View>
               <Text>NIF: {customer.nif}</Text>
             </View>
@@ -318,31 +304,35 @@ export const MyDocument = () => {
         </View>
 
         {/* Table Rows */}
-        <View style={styles.tableRow}>
-          <Text style={[styles.tableColumn, { flex: 0.5 }]}>KN-001</Text>
-          <Text style={[styles.tableColumn, { flex: 2 }]}>
-            Mesa redonda Keanu
-          </Text>
-          <Text style={styles.tableColumn}>1</Text>
-          <Text style={styles.tableColumn}>€123.00</Text>
-          <Text style={styles.tableColumn}>€123.00</Text>
-        </View>
+        {order.items.map((item, index) => (
+          <View key={index} style={styles.tableRow}>
+            <Text style={[styles.tableColumn, { flex: 0.5 }]}>{item.ref}</Text>
+            <Text style={[styles.tableColumn, { flex: 2 }]}>
+              {item.description}
+            </Text>
+            <Text style={styles.tableColumn}>{item.quantity}</Text>
+            <Text style={styles.tableColumn}>€{item.unitPrice.toFixed(2)}</Text>
+            <Text style={styles.tableColumn}>€{item.total.toFixed(2)}</Text>
+          </View>
+        ))}
 
         <View style={styles.totalSection}>
-          <Text>IVA incluido à taxa em vigor ({currentVAT})</Text>
+          <Text>IVA incluido à taxa em vigor ({order.vat})</Text>
           <Text style={styles.totalLabel}>Total:</Text>
-          <Text style={styles.totalAmount}>€123.00</Text>
+          <Text style={styles.totalAmount}>
+            €{order.totalAmount.toFixed(2)}
+          </Text>
         </View>
 
         <View style={styles.transferDetails}>
           <Text style={styles.detailsTitle}>Os seus dados</Text>
           <View>
             <Text style={styles.detailsLabel}>Email</Text>
-            <Text style={styles.detailsValue}>malik@hey.com</Text>
+            <Text style={styles.detailsValue}>{customer.email}</Text>
           </View>
           <View>
             <Text style={styles.detailsLabel}>Telefone</Text>
-            <Text style={styles.detailsValue}>962119084</Text>
+            <Text style={styles.detailsValue}>{customer.phone}</Text>
           </View>
         </View>
 
@@ -351,16 +341,16 @@ export const MyDocument = () => {
             <Text style={styles.deliveryAddressTitle}>Local de Entrega</Text>
             <View>
               <Text style={styles.deliveryAddressValue}>
-                {`${customer.address1}, ${customer.address2}`}
+                {`${customer.address.address1}, ${customer.address.address2}`}
               </Text>
               <Text style={styles.deliveryAddressValue}>
-                {customer.postalCode}
+                {customer.address.postalCode}
               </Text>
             </View>
           </View>
 
           <View style={styles.moreDetailsNotes}>
-            {!customer.addressHasElevator && (
+            {!customer.address.hasElevator && (
               <>
                 <Text>Notas</Text>
                 <Text>Não há elevador</Text>

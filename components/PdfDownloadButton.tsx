@@ -3,10 +3,11 @@
 import { BlobProvider } from '@react-pdf/renderer';
 import { MyDocument } from '@/components/document';
 import React from 'react';
+import { mockData } from '@/lib/mockData';
 
 export const PdfDownloadButton = () => {
   return (
-    <BlobProvider document={<MyDocument />}>
+    <BlobProvider document={<MyDocument {...mockData} />}>
       {({ loading, url }) => {
         if (loading) {
           return <button>Loading...</button>;
