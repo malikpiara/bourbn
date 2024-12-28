@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: '8SL Hermes',
-    short_name: 'Hermes',
+    name: 'Sunnyside',
+    short_name: 'Sunnyside',
     description: 'Aplicação de Gestão da Octosólido',
     start_url: '/',
     display: 'standalone',
