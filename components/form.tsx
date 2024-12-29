@@ -37,6 +37,9 @@ import {
 import { DynamicTable } from './table';
 import { formSchema, FormValues } from '@/lib/schema';
 
+// autoComplete='new-password' is a hack I put together to disable
+// the browser autofill.
+
 export function SalesForm() {
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -101,6 +104,8 @@ export function SalesForm() {
               }
             })}
             autoComplete='off' // Disabling form autofill.
+            data-form-type='business'
+            data-purpose='point-of-sale'
             className='space-y-8'
           >
             <h2 className='scroll-m-20 text-4xl font-extrabold tracking-tight'>
@@ -113,7 +118,11 @@ export function SalesForm() {
                 <FormItem>
                   <FormLabel>Número da Encomenda</FormLabel>
                   <FormControl>
-                    <Input placeholder='6111' autoComplete='off' {...field} />
+                    <Input
+                      placeholder='6111'
+                      autoComplete='new-password'
+                      {...field}
+                    />
                   </FormControl>
                   <FormDescription>
                     O número da encomenda é gerado automaticamente.
@@ -238,7 +247,7 @@ export function SalesForm() {
                 <FormItem>
                   <FormLabel>Nome</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off' {...field} />
+                    <Input autoComplete='false' {...field} />
                   </FormControl>
                   <FormDescription>
                     Escreve o primeiro e último nome, ou o nome da empresa.
@@ -255,7 +264,7 @@ export function SalesForm() {
                 <FormItem>
                   <FormLabel>Email do cliente</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off' {...field} />
+                    <Input autoComplete='new-password' {...field} />
                   </FormControl>
                   <FormDescription>
                     O cliente vai receber notificações através deste endereço.
@@ -273,7 +282,7 @@ export function SalesForm() {
                   <FormControl>
                     <Input
                       placeholder='962119084'
-                      autoComplete='off'
+                      autoComplete='new-password'
                       {...field}
                     />
                   </FormControl>
@@ -292,7 +301,7 @@ export function SalesForm() {
                 <FormItem>
                   <FormLabel>Número de contribuinte</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off' {...field} />
+                    <Input autoComplete='new-password' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
@@ -308,7 +317,7 @@ export function SalesForm() {
                   <FormControl>
                     <Input
                       placeholder='Rua do Carmo 12'
-                      autoComplete='off'
+                      autoComplete='new-password'
                       {...field}
                     />
                   </FormControl>
@@ -327,7 +336,7 @@ export function SalesForm() {
                   <FormControl>
                     <Input
                       placeholder='Lote B, 3dto'
-                      autoComplete='off'
+                      autoComplete='new-password'
                       {...field}
                     />
                   </FormControl>
@@ -346,7 +355,7 @@ export function SalesForm() {
                 <FormItem>
                   <FormLabel>Código Postal</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off' {...field} />
+                    <Input autoComplete='new-password' {...field} />
                   </FormControl>
 
                   <FormMessage />
@@ -361,7 +370,7 @@ export function SalesForm() {
                 <FormItem>
                   <FormLabel>Cidade</FormLabel>
                   <FormControl>
-                    <Input autoComplete='off' {...field} />
+                    <Input autoComplete='new-password' {...field} />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
