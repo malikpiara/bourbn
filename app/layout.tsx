@@ -25,13 +25,6 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <head>
-        {/* This meta tag tells browsers this is a specialized business context */}
-        <meta
-          name='format-detection'
-          content='telephone=no,email=no,address=no'
-        />
-      </head>
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
