@@ -128,7 +128,7 @@ export function DynamicTable({ form }: DynamicTableProps) {
                           className='w-full'
                         />
                         {error && (
-                          <p className='text-xs text-red-500 mt-1'>
+                          <p className='text-xs text-red-700 mt-1'>
                             {error.message}
                           </p>
                         )}
@@ -164,7 +164,7 @@ export function DynamicTable({ form }: DynamicTableProps) {
                           </SelectContent>
                         </Select>
                         {error && (
-                          <p className='text-xs text-red-500 mt-1'>
+                          <p className='text-xs text-red-700 mt-1'>
                             {error.message}
                           </p>
                         )}
@@ -185,7 +185,7 @@ export function DynamicTable({ form }: DynamicTableProps) {
                           className='w-full'
                         />
                         {error && (
-                          <p className='text-xs text-red-500 mt-1'>
+                          <p className='text-xs text-red-700 mt-1'>
                             {error.message}
                           </p>
                         )}
@@ -232,7 +232,7 @@ export function DynamicTable({ form }: DynamicTableProps) {
                           }}
                         />
                         {error && (
-                          <p className='text-xs text-red-500 mt-1'>
+                          <p className='text-xs text-red-700 mt-1'>
                             {error.message}
                           </p>
                         )}
@@ -263,13 +263,13 @@ export function DynamicTable({ form }: DynamicTableProps) {
                         </AlertDialogDescription>
                       </AlertDialogHeader>
                       <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogCancel>Cancelar</AlertDialogCancel>
                         <AlertDialogAction
                           onClick={() =>
                             itemToRemove !== null && handleRemove(itemToRemove)
                           }
                         >
-                          Continue
+                          Continuar
                         </AlertDialogAction>
                       </AlertDialogFooter>
                     </AlertDialogContent>

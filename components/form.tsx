@@ -89,7 +89,7 @@ export function SalesForm() {
 
   const StoreSelection = () => (
     <div className='space-y-8'>
-      <h2 className='scroll-m-20 text-4xl font-extrabold tracking-tight'>
+      <h2 className='scroll-m-20 text-4xl font-semibold tracking-tight'>
         Selecione a Loja
       </h2>
       <FormField
@@ -196,7 +196,7 @@ export function SalesForm() {
               <StoreSelection />
             ) : (
               <>
-                <h2 className='scroll-m-20 text-4xl font-extrabold tracking-tight'>
+                <h2 className='scroll-m-20 text-4xl font-semibold tracking-tight'>
                   Nova Encomenda
                 </h2>
                 <FormField
@@ -534,7 +534,7 @@ export function SalesForm() {
                 </Button>
 
                 {(pdfError || blobError) && (
-                  <p className='text-sm text-red-500 mt-2'>
+                  <p className='text-sm text-red-700 mt-2'>
                     {pdfError || 'Ocorreu um erro ao gerar o documento.'}
                   </p>
                 )}
