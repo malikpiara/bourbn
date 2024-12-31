@@ -268,12 +268,25 @@ export function SalesForm() {
                 <FormField
                   control={form.control}
                   name='tableEntries'
-                  render={() => (
+                  render={({ fieldState: { error } }) => (
                     <FormItem>
                       <FormControl>
                         <DynamicTable form={form} />
                       </FormControl>
-                      <FormMessage />
+                      <div className='space-y-2'>
+                        {error?.type === 'too_small' && (
+                          <p className='text-sm font-medium text-destructive'>
+                            Por favor, adicione pelo menos um produto à
+                            encomenda.
+                          </p>
+                        )}
+                        {error && error.type !== 'too_small' && (
+                          <p className='text-sm font-medium text-destructive'>
+                            Verifique se todos os campos dos produtos estão
+                            preenchidos corretamente.
+                          </p>
+                        )}
+                      </div>
                     </FormItem>
                   )}
                 />
