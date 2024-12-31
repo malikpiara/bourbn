@@ -42,21 +42,31 @@ import {
 } from '@/components/ui/input-otp';
 import { DynamicTable } from './table';
 import { formSchema, FormValues } from '@/lib/schema';
-import { useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
+import { DocumentData } from '@/types/document';
+import {
+  COMPANY_INFO,
+  VAT_RATE,
+  DEFAULT_ORDER_NUMBER,
+  DATE_FORMAT,
+} from '@/lib/constants';
 
 // autoComplete='new-password' is a hack I put together to disable
 // the browser autofill.
 
 export function SalesForm() {
   const [step, setStep] = useState(1); // Maybe it might make more sense to call this 'store' and 'setStore'?
+  const [isGenerating, setIsGenerating] = useState(false);
+  const [pdfError, setPdfError] = useState<string | null>(null);
+  const [documentData, setDocumentData] = useState<DocumentData | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     mode: 'onBlur',
     defaultValues: {
       name: '',
-      orderNumber: 6111,
-      dob: new Date(),
+      orderNumber: DEFAULT_ORDER_NUMBER,
+      date: new Date(),
       email: '',
       phoneNumber: '',
       nif: '',
@@ -65,21 +75,11 @@ export function SalesForm() {
       postalCode: '',
       city: '',
       tableEntries: [],
+      storeId: '',
+      elevator: false,
+      notes: '',
     },
   });
-
-  // Track form validity - this takes into account your Zod schema
-  const isValid = form.formState.isValid;
-
-  // Helper function to trigger the PDF download
-  const downloadPdf = (url: string) => {
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `encomenda-${mockData.order.id}.pdf`;
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
-  };
 
   const handleStoreSelect = (value: string) => {
     form.setValue('storeId', value);
@@ -119,47 +119,76 @@ export function SalesForm() {
     </div>
   );
 
-  const formatPostalCode = (value: string) => {
-    if (!value) return value;
-    // Remove any existing hyphens and get just the numbers
-    const numbers = value.replace(/-/g, '');
-    // If we have at least 4 digits, insert hyphen after the first 4 digits
-    if (numbers.length >= 4) {
-      return `${numbers.slice(0, 4)}-${numbers.slice(4)}`;
-    }
-    return numbers;
-  };
+  const createSubmitHandler = useCallback(
+    (url: string | null) => async (values: FormValues) => {
+      // If we're already generating, don't allow another submission
+      if (isGenerating) {
+        return;
+      }
+      setIsGenerating(true);
+      setPdfError(null);
+
+      try {
+        // Log the form values to help us debug
+        console.log('Form Values:', values);
+        console.log('Table Entries:', values.tableEntries);
+
+        // Validate form data using zod
+        const result = formSchema.safeParse(values);
+        if (!result.success) {
+          console.error('Validation Errors:', result.error.errors);
+          setPdfError('Por favor, verifique os dados do formulário.');
+          return;
+        }
+
+        // Transform form data and store it
+        const formattedDocumentData = formatOrderData(values);
+        console.log('Formatted Data:', formattedDocumentData);
+
+        setDocumentData(formattedDocumentData);
+
+        // Wait a moment for state to update
+        await new Promise((resolve) => setTimeout(resolve, 100));
+
+        // Wait for the PDF to be generated
+        if (!url) {
+          throw new Error('Aguardando geração do PDF...');
+        } // Now we know we have a URL, we can download
+        downloadPdf(url, formattedDocumentData.order.id);
+      } catch (error) {
+        console.error('Error details:', error);
+        setPdfError(
+          error instanceof Error
+            ? error.message
+            : 'Ocorreu um erro ao processar o formulário.'
+        );
+      } finally {
+        setIsGenerating(false);
+      }
+    },
+    [isGenerating]
+  );
+
+  useEffect(() => {
+    // Clean up function that runs when component unmounts
+    return () => {
+      if (documentData) {
+        // Clean up any blob URLs
+        URL.revokeObjectURL(documentData.toString());
+      }
+    };
+  }, [documentData]);
 
   return (
-    <BlobProvider document={<OrderDocument {...mockData} />}>
-      {({ url, error }) => (
+    <BlobProvider
+      document={<OrderDocument {...(documentData || mockData)} />}
+      key={documentData ? 'doc' : 'mock'}
+    >
+      {({ url, loading, error: blobError }) => (
         <Form {...form}>
           <form
-            onSubmit={form.handleSubmit((values) => {
-              // Format the postal code before validation/submission
-              const formattedValues = {
-                ...values,
-                postalCode: formatPostalCode(values.postalCode),
-              };
-
-              // Handle validation
-              const result = formSchema.safeParse(formattedValues);
-              if (!result.success) {
-                console.error('Validation Errors:', result.error.errors);
-                return;
-              }
-
-              // If validation passes, log the form submission
-              console.log('Form Submitted:', formattedValues);
-
-              // Then trigger the PDF download if we have a URL
-              if (url) {
-                downloadPdf(url);
-              }
-            })}
-            autoComplete='off' // Disabling form autofill.
-            data-form-type='business'
-            data-purpose='point-of-sale'
+            onSubmit={form.handleSubmit(createSubmitHandler(url))}
+            autoComplete='off'
             className='space-y-8'
           >
             {step === 1 ? (
@@ -191,7 +220,7 @@ export function SalesForm() {
                 />
                 <FormField
                   control={form.control}
-                  name='dob'
+                  name='date'
                   render={({ field }) => (
                     <FormItem className='flex flex-col'>
                       <FormLabel>Data da encomenda</FormLabel>
@@ -230,32 +259,6 @@ export function SalesForm() {
                     </FormItem>
                   )}
                 />
-
-                {/*  <FormField
-                  control={form.control}
-                  name='storeId'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Loja</FormLabel>
-                      <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue placeholder='Selecione a loja onde a venda foi executada' />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value='1'>1 - Clássica</SelectItem>
-                          <SelectItem value='3'>3 - Moderna</SelectItem>
-                          <SelectItem value='6'>6 - Iluminação</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
 
                 <h2 className='scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"'>
                   Produtos
@@ -348,20 +351,6 @@ export function SalesForm() {
                     </FormItem>
                   )}
                 />
-
-                {/* <FormField
-                  control={form.control}
-                  name='nif'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Número de contribuinte</FormLabel>
-                      <FormControl>
-                        <Input autoComplete='new-password' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                /> */}
 
                 <FormField
                   control={form.control}
@@ -524,14 +513,17 @@ export function SalesForm() {
                   )}
                 />
 
-                <Button type='submit' disabled={!isValid}>
-                  Submeter
+                <Button
+                  type='submit'
+                  disabled={!form.formState.isValid || isGenerating || loading}
+                  className='w-full'
+                >
+                  {isGenerating || loading ? 'A gerar PDF...' : 'Submeter'}
                 </Button>
 
-                {error && (
-                  <p className='text-sm text-red-500'>
-                    Ocorreu um erro ao preparar o documento. Por favor,
-                    certifique-se que está online na primeira utilização.
+                {(pdfError || blobError) && (
+                  <p className='text-sm text-red-500 mt-2'>
+                    {pdfError || 'Ocorreu um erro ao gerar o documento.'}
                   </p>
                 )}
               </>
@@ -542,3 +534,81 @@ export function SalesForm() {
     </BlobProvider>
   );
 }
+
+const formatNIF = (nif: string): string => {
+  // Format NIF with spaces: 123 456 789
+  return nif.replace(/(\d{3})(?=\d)/g, '$1 ');
+};
+
+const formatPostalCode = (postalCode: string): string => {
+  if (!postalCode) return postalCode;
+  // Format postal code: 1234-567
+  return postalCode.replace(/(\d{4})(\d{3})/, '$1-$2');
+};
+
+// Helper function to trigger the PDF download
+const downloadPdf = (url: string, documentId: string) => {
+  const link = document.createElement('a');
+  link.href = url;
+  link.download = `encomenda-${documentId}.pdf`;
+  document.body.appendChild(link);
+  link.click();
+  document.body.removeChild(link);
+};
+
+const formatOrderData = (values: FormValues): DocumentData => {
+  try {
+    // Validate that we have at least one table entry
+    if (!values.tableEntries.length) {
+      throw new Error('A encomenda deve ter pelo menos um produto.');
+    }
+
+    const orderItems = values.tableEntries.map((entry) => {
+      const total = entry.quantity * entry.price;
+      if (isNaN(total)) {
+        throw new Error('Erro ao calcular o total do produto.');
+      }
+
+      return {
+        ref: entry.ref,
+        description: entry.designation,
+        quantity: entry.quantity,
+        unitPrice: entry.price,
+        total,
+      };
+    });
+
+    const totalAmount = orderItems.reduce((sum, item) => sum + item.total, 0);
+    if (isNaN(totalAmount)) {
+      throw new Error('Erro ao calcular o total da encomenda.');
+    }
+
+    return {
+      company: COMPANY_INFO, // From constants
+      customer: {
+        name: values.name,
+        email: values.email,
+        phone: values.phoneNumber,
+        nif: formatNIF(values.nif),
+        address: {
+          address1: values.address1,
+          address2: values.address2 || '',
+          postalCode: formatPostalCode(values.postalCode),
+          city: values.city,
+          hasElevator: values.elevator || false,
+        },
+      },
+      order: {
+        id: values.orderNumber.toString(),
+        storeId: `OCT ${values.storeId}`,
+        date: format(values.date, DATE_FORMAT),
+        items: orderItems,
+        vat: VAT_RATE,
+        totalAmount,
+      },
+    };
+  } catch (error) {
+    console.error('Error formatting order data:', error);
+    throw error;
+  }
+};

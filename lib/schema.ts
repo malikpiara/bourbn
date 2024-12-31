@@ -2,9 +2,7 @@ import { z } from 'zod';
 
 export const tableEntrySchema = z.object({
   id: z.number(),
-  productName: z
-    .string()
-    .min(5, 'O nome do produto deve ter pelo menos 5 caracteres.'),
+  ref: z.string().min(3, 'A referência deve ter pelo menos 3 caracteres.'),
   designation: z
     .string()
     .min(5, 'O nome do produto deve ter pelo menos 5 caracteres.'),
@@ -23,7 +21,7 @@ export const formSchema = z.object({
   orderNumber: z.coerce.number().min(4, {
     message: 'O número da encomenda deve ter pelo menos 4 caracteres.',
   }),
-  dob: z.date({
+  date: z.date({
     required_error: 'A date of birth is required.',
   }),
   email: z.string().email().min(5, {

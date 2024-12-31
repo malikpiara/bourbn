@@ -18,10 +18,27 @@ interface DynamicTableProps {
 }
 
 export function DynamicTable({ form }: DynamicTableProps) {
-  const { fields, append, remove } = useFieldArray({
+  const {
+    fields,
+    append: fieldArrayAppend,
+    remove,
+  } = useFieldArray({
     control: form.control,
     name: 'tableEntries',
   });
+
+  // Here's where we create our new append function that will properly initialize new entries
+  const handleAppend = () => {
+    const newEntry = {
+      id: fields.length,
+      ref: '',
+      designation: '',
+      quantity: 1,
+      price: 0,
+    };
+    console.log('Adding new entry:', newEntry); // Debug log
+    fieldArrayAppend(newEntry); // Use the original append function from useFieldArray
+  };
 
   return (
     <div>
@@ -40,13 +57,10 @@ export function DynamicTable({ form }: DynamicTableProps) {
             <TableRow key={field.id}>
               <TableCell>
                 <Input
-                  {...form.register(
-                    `tableEntries.${index}.productName` as const
-                  )}
-                  placeholder='Referência do produto'
+                  {...form.register(`tableEntries.${index}.ref` as const)}
+                  placeholder='Referência'
                 />
               </TableCell>
-
               <TableCell>
                 <Input
                   {...form.register(`tableEntries.${index}.quantity` as const, {
@@ -90,15 +104,7 @@ export function DynamicTable({ form }: DynamicTableProps) {
 
       <Button
         type='button'
-        onClick={() =>
-          append({
-            id: fields.length,
-            productName: '',
-            designation: '',
-            quantity: 1,
-            price: 0,
-          })
-        }
+        onClick={handleAppend} // Use our new handler instead of the direct append call
         className='flex items-center gap-2'
       >
         <PlusCircle className='h-4 w-4' />
