@@ -39,8 +39,8 @@ export const formSchema = z.object({
     message: 'A morada deve ter pelo menos 5 caracteres.',
   }),
   address2: z.string().optional(),
-  postalCode: z.string().min(5, {
-    message: 'O código postal deve ter 5 caracteres.',
+  postalCode: z.string().min(7, {
+    message: 'O código postal deve ter 7 caracteres.',
   }),
   city: z.string().min(5, {
     message: 'A cidade deve ter pelo menos 5 caracteres.',

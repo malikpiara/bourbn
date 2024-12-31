@@ -34,6 +34,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import {
+  InputOTP,
+  InputOTPGroup,
+  InputOTPSeparator,
+  InputOTPSlot,
+} from '@/components/ui/input-otp';
 import { DynamicTable } from './table';
 import { formSchema, FormValues } from '@/lib/schema';
 import { useState } from 'react';
@@ -46,7 +52,7 @@ export function SalesForm() {
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
-    mode: 'onChange',
+    mode: 'onBlur',
     defaultValues: {
       name: '',
       orderNumber: 6111,
@@ -113,21 +119,38 @@ export function SalesForm() {
     </div>
   );
 
+  const formatPostalCode = (value: string) => {
+    if (!value) return value;
+    // Remove any existing hyphens and get just the numbers
+    const numbers = value.replace(/-/g, '');
+    // If we have at least 4 digits, insert hyphen after the first 4 digits
+    if (numbers.length >= 4) {
+      return `${numbers.slice(0, 4)}-${numbers.slice(4)}`;
+    }
+    return numbers;
+  };
+
   return (
     <BlobProvider document={<OrderDocument {...mockData} />}>
       {({ url, error }) => (
         <Form {...form}>
           <form
             onSubmit={form.handleSubmit((values) => {
-              // First handle validation
-              const result = formSchema.safeParse(values);
+              // Format the postal code before validation/submission
+              const formattedValues = {
+                ...values,
+                postalCode: formatPostalCode(values.postalCode),
+              };
+
+              // Handle validation
+              const result = formSchema.safeParse(formattedValues);
               if (!result.success) {
                 console.error('Validation Errors:', result.error.errors);
                 return;
               }
 
               // If validation passes, log the form submission
-              console.log('Form Submitted:', values);
+              console.log('Form Submitted:', formattedValues);
 
               // Then trigger the PDF download if we have a URL
               if (url) {
@@ -330,7 +353,7 @@ export function SalesForm() {
                   )}
                 />
 
-                <FormField
+                {/* <FormField
                   control={form.control}
                   name='nif'
                   render={({ field }) => (
@@ -338,6 +361,32 @@ export function SalesForm() {
                       <FormLabel>Número de contribuinte</FormLabel>
                       <FormControl>
                         <Input autoComplete='new-password' {...field} />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                /> */}
+
+                <FormField
+                  control={form.control}
+                  name='nif'
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Número de contribuinte</FormLabel>
+                      <FormControl>
+                        <InputOTP maxLength={9} {...field}>
+                          <InputOTPGroup>
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                            <InputOTPSlot index={3} />
+                            <InputOTPSlot index={4} />
+                            <InputOTPSlot index={5} />
+                            <InputOTPSlot index={6} />
+                            <InputOTPSlot index={7} />
+                            <InputOTPSlot index={8} />
+                          </InputOTPGroup>
+                        </InputOTP>
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -391,9 +440,21 @@ export function SalesForm() {
                     <FormItem>
                       <FormLabel>Código Postal</FormLabel>
                       <FormControl>
-                        <Input autoComplete='new-password' {...field} />
+                        <InputOTP maxLength={7} {...field}>
+                          <InputOTPGroup>
+                            <InputOTPSlot index={0} />
+                            <InputOTPSlot index={1} />
+                            <InputOTPSlot index={2} />
+                            <InputOTPSlot index={3} />
+                          </InputOTPGroup>
+                          <InputOTPSeparator />
+                          <InputOTPGroup>
+                            <InputOTPSlot index={4} />
+                            <InputOTPSlot index={5} />
+                            <InputOTPSlot index={6} />
+                          </InputOTPGroup>
+                        </InputOTP>
                       </FormControl>
-
                       <FormMessage />
                     </FormItem>
                   )}
