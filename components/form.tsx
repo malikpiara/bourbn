@@ -7,7 +7,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
-import { CalendarIcon } from 'lucide-react';
+import { CalendarIcon, ChevronDown } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import {
@@ -51,6 +51,11 @@ import {
   DEFAULT_ORDER_NUMBER,
   DATE_FORMAT,
 } from '@/lib/constants';
+import {
+  Collapsible,
+  CollapsibleContent,
+  CollapsibleTrigger,
+} from '@/components/ui/collapsible';
 
 // autoComplete='new-password' is a hack I put together to disable
 // the browser autofill.
@@ -199,68 +204,84 @@ export function SalesForm() {
                 <h2 className='scroll-m-20 text-4xl font-semibold tracking-tight'>
                   Nova Encomenda
                 </h2>
-                <FormField
-                  control={form.control}
-                  name='orderNumber'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Número da Encomenda</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='6111'
-                          autoComplete='false'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        O número da encomenda é gerado automaticamente.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='date'
-                  render={({ field }) => (
-                    <FormItem className='flex flex-col'>
-                      <FormLabel>Data da encomenda</FormLabel>
-                      <Popover>
-                        <PopoverTrigger asChild>
+                <Collapsible className='w-full space-y-2 bg-[#fbf0dc]'>
+                  <CollapsibleTrigger asChild>
+                    <div className='flex w-full items-center justify-between space-x-4 px-8 py-6 cursor-pointer rounded-md transition-colors bg-[#fbf0dc]'>
+                      <h4 className='text-sm font-medium'>
+                        Rever Detalhes Automatizados
+                      </h4>
+                      <ChevronDown className='h-4 w-4 transition-transform duration-200 ease-in-out data-[state=open]:rotate-180' />
+                    </div>
+                  </CollapsibleTrigger>
+                  <CollapsibleContent className='space-y-4 p-6 transition-all duration-200 ease-in-out'>
+                    <FormField
+                      control={form.control}
+                      name='orderNumber'
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel>Número da Encomenda</FormLabel>
                           <FormControl>
-                            <Button
-                              variant={'outline'}
-                              className={cn(
-                                'w-[340px] pl-3 text-left font-normal',
-                                !field.value && 'text-muted-foreground'
-                              )}
-                            >
-                              {field.value ? (
-                                format(field.value, 'PPP', { locale: pt }) // Remember to change this once you scale.
-                              ) : (
-                                <span>Escolha uma data</span>
-                              )}
-                              <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                            </Button>
+                            <Input
+                              placeholder='6111'
+                              autoComplete='false'
+                              {...field}
+                            />
                           </FormControl>
-                        </PopoverTrigger>
-                        <PopoverContent className='w-auto p-0' align='start'>
-                          <Calendar
-                            mode='single'
-                            selected={field.value}
-                            onSelect={field.onChange}
-                            disabled={(date) =>
-                              date > new Date() || date < new Date('1900-01-01')
-                            }
-                            initialFocus
-                            locale={pt} // Change this when you get customers outside Portugal.
-                          />
-                        </PopoverContent>
-                      </Popover>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
+                          <FormDescription>
+                            O número da encomenda é gerado automaticamente.
+                          </FormDescription>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                    <FormField
+                      control={form.control}
+                      name='date'
+                      render={({ field }) => (
+                        <FormItem className='flex flex-col'>
+                          <FormLabel>Data da encomenda</FormLabel>
+                          <Popover>
+                            <PopoverTrigger asChild>
+                              <FormControl>
+                                <Button
+                                  variant={'outline'}
+                                  className={cn(
+                                    'w-[340px] pl-3 text-left font-normal',
+                                    !field.value && 'text-muted-foreground'
+                                  )}
+                                >
+                                  {field.value ? (
+                                    format(field.value, 'PPP', { locale: pt })
+                                  ) : (
+                                    <span>Escolha uma data</span>
+                                  )}
+                                  <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
+                                </Button>
+                              </FormControl>
+                            </PopoverTrigger>
+                            <PopoverContent
+                              className='w-auto p-0'
+                              align='start'
+                            >
+                              <Calendar
+                                mode='single'
+                                selected={field.value}
+                                onSelect={field.onChange}
+                                disabled={(date) =>
+                                  date > new Date() ||
+                                  date < new Date('1900-01-01')
+                                }
+                                initialFocus
+                                locale={pt}
+                              />
+                            </PopoverContent>
+                          </Popover>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </CollapsibleContent>
+                </Collapsible>
 
                 <h2 className='scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"'>
                   Produtos

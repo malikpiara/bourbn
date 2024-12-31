@@ -109,7 +109,7 @@ export function DynamicTable({ form }: DynamicTableProps) {
               <TableHead className='w-[100px]'>Quantidade</TableHead>
               <TableHead className='min-w-[200px]'>Designação</TableHead>
               <TableHead className='w-[200px]'>Preço Unitário</TableHead>
-              <TableHead className='w-[100px]'>Ações</TableHead>
+              <TableHead className='w-[150px]'>Ações</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -245,13 +245,13 @@ export function DynamicTable({ form }: DynamicTableProps) {
                     <AlertDialogTrigger asChild>
                       <Button
                         type='button'
-                        variant='ghost'
-                        size='icon'
-                        className='opacity-0 group-hover:opacity-100 transition-opacity'
+                        variant='outline'
+                        size='sm'
+                        className='group-hover:opacity-80 transition-opacity text-muted-foreground'
                         onClick={() => setItemToRemove(index)}
                       >
-                        <Trash2 className='h-4 w-4' />
-                        <span className='sr-only'>Remove product</span>
+                        <Trash2 className='h-4 w-4 mr-2' />
+                        Apagar
                       </Button>
                     </AlertDialogTrigger>
                     <AlertDialogContent>
