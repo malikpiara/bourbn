@@ -13,7 +13,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: 'Sunnyside',
+  title: 'Bourbn',
   description:
     'Digital bridge between a traditional sales process and modern document management.',
 };

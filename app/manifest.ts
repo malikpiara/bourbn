@@ -2,8 +2,8 @@ import type { MetadataRoute } from 'next';
 
 export default function manifest(): MetadataRoute.Manifest {
   return {
-    name: 'Sunnyside',
-    short_name: 'Sunnyside',
+    name: 'Bourbn',
+    short_name: 'Bourbn',
     description: 'Aplicação de Gestão da Octosólido',
     start_url: '/',
     display: 'standalone',
