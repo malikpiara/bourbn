@@ -339,11 +339,7 @@ export function SalesForm() {
                     <FormItem>
                       <FormLabel>Telefone do cliente</FormLabel>
                       <FormControl>
-                        <Input
-                          placeholder='962119084'
-                          autoComplete='new-password'
-                          {...field}
-                        />
+                        <Input autoComplete='new-password' {...field} />
                       </FormControl>
                       <FormDescription>
                         Pode ser usado para auxiliar a entrega.
@@ -374,7 +370,23 @@ export function SalesForm() {
                     <FormItem>
                       <FormLabel>Número de contribuinte</FormLabel>
                       <FormControl>
-                        <InputOTP maxLength={9} {...field}>
+                        <InputOTP
+                          maxLength={9}
+                          {...field}
+                          onKeyDown={(event) => {
+                            // Allow only numeric keys, Backspace, Delete, Arrow keys, etc.
+                            if (
+                              !/^[0-9]$/.test(event.key) && // Numeric keys
+                              event.key !== 'Backspace' &&
+                              event.key !== 'Delete' &&
+                              event.key !== 'ArrowLeft' &&
+                              event.key !== 'ArrowRight' &&
+                              event.key !== 'Tab'
+                            ) {
+                              event.preventDefault(); // Block other keys
+                            }
+                          }}
+                        >
                           <InputOTPGroup>
                             <InputOTPSlot index={0} />
                             <InputOTPSlot index={1} />
@@ -440,7 +452,23 @@ export function SalesForm() {
                     <FormItem>
                       <FormLabel>Código Postal</FormLabel>
                       <FormControl>
-                        <InputOTP maxLength={7} {...field}>
+                        <InputOTP
+                          maxLength={7}
+                          {...field}
+                          onKeyDown={(event) => {
+                            // Allow only numeric keys, Backspace, Delete, Arrow keys, etc.
+                            if (
+                              !/^[0-9]$/.test(event.key) && // Numeric keys
+                              event.key !== 'Backspace' &&
+                              event.key !== 'Delete' &&
+                              event.key !== 'ArrowLeft' &&
+                              event.key !== 'ArrowRight' &&
+                              event.key !== 'Tab'
+                            ) {
+                              event.preventDefault(); // Block other keys
+                            }
+                          }}
+                        >
                           <InputOTPGroup>
                             <InputOTPSlot index={0} />
                             <InputOTPSlot index={1} />

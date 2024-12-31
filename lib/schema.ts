@@ -29,19 +29,22 @@ export const formSchema = z.object({
   email: z.string().email().min(5, {
     message: 'O nome deve ter pelo menos 5 caracteres.',
   }),
-  phoneNumber: z.string().length(9, {
-    message: 'O número deve ter 9 caracteres.',
-  }),
-  nif: z.string().length(9, {
-    message: 'O número de contribuinte tem 9 caracteres.',
-  }),
+  phoneNumber: z
+    .string()
+    .length(9, { message: 'O número deve ter 9 caracteres.' })
+    .regex(/^\d+$/, { message: 'Apenas números são permitidos.' }),
+  nif: z
+    .string()
+    .length(9, { message: 'O número de contribuinte tem 9 caracteres.' })
+    .regex(/^\d+$/, { message: 'Apenas números são permitidos.' }),
   address1: z.string().min(5, {
     message: 'A morada deve ter pelo menos 5 caracteres.',
   }),
   address2: z.string().optional(),
-  postalCode: z.string().min(7, {
-    message: 'O código postal deve ter 7 caracteres.',
-  }),
+  postalCode: z
+    .string()
+    .length(7, { message: 'O código postal deve ter 7 caracteres.' })
+    .regex(/^\d+$/, { message: 'Apenas números são permitidos.' }),
   city: z.string().min(5, {
     message: 'A cidade deve ter pelo menos 5 caracteres.',
   }),

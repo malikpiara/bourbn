@@ -69,6 +69,7 @@ export const styles = StyleSheet.create({
     padding: 5,
     fontWeight: 700,
   },
+
   tableRow: {
     flexDirection: 'row',
     borderBottom: 1,
@@ -79,9 +80,45 @@ export const styles = StyleSheet.create({
     flex: 1,
   },
   totalSection: {
-    flexDirection: 'row',
-    justifyContent: 'flex-end',
     marginTop: 20,
+  },
+
+  totalRow: {
+    flexDirection: 'row',
+    padding: 5,
+    alignItems: 'center', // This ensures vertical alignment
+  },
+
+  vatText: {
+    flex: 2, // This will take up the space of ref + description columns
+    textAlign: 'left',
+    paddingRight: 10,
+  },
+
+  // Column styles that will be shared between table and total section
+  refColumn: {
+    flex: 0.5,
+    textAlign: 'left',
+  },
+
+  descriptionColumn: {
+    flex: 2,
+    textAlign: 'left',
+  },
+
+  quantityColumn: {
+    flex: 1,
+    textAlign: 'right',
+  },
+
+  unitPriceColumn: {
+    flex: 1,
+    textAlign: 'right',
+  },
+
+  totalColumn: {
+    flex: 1,
+    textAlign: 'right',
   },
   totalLabel: {
     width: '70%',
@@ -218,7 +255,13 @@ export const styles = StyleSheet.create({
   },
   valueColumn: {
     flex: 1,
-    padding: 10, // Slightly more padding
+    padding: 10,
+    borderRightWidth: 1,
+    borderRightColor: '#e2e8f0',
+  },
+  paymentMethodColumn: {
+    flex: 1,
+    padding: 10,
     borderRightWidth: 1,
     borderRightColor: '#e2e8f0',
   },

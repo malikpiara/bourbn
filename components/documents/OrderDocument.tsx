@@ -48,33 +48,55 @@ export const OrderDocument: React.FC<DocumentData> = ({
 
         {/* Table Header */}
         <View style={styles.tableHeader}>
-          <Text style={[styles.tableColumn, { flex: 0.5 }]}>Ref.</Text>
-          <Text style={[styles.tableColumn, { flex: 2 }]}>Designação</Text>
-          <Text style={styles.tableColumn}>Quantidade</Text>
-          <Text style={styles.tableColumn}>Preço Unitário</Text>
-          <Text style={styles.tableColumn}>Total</Text>
+          <Text style={[styles.refColumn]}>Ref.</Text>
+          <Text style={[styles.descriptionColumn]}>Designação</Text>
+          <Text style={[styles.quantityColumn]}>Quantidade</Text>
+          <Text style={[styles.unitPriceColumn]}>Preço Unitário</Text>
+          <Text style={[styles.totalColumn]}>Total</Text>
         </View>
 
         {/* Table Rows */}
-        {order.items.map((item, index) => (
-          <View key={index} style={styles.tableRow}>
-            <Text style={[styles.tableColumn, { flex: 0.5 }]}>{item.ref}</Text>
-            <Text style={[styles.tableColumn, { flex: 2 }]}>
-              {item.description}
-            </Text>
-            <Text style={styles.tableColumn}>{item.quantity}</Text>
-            <Text style={styles.tableColumn}>€{item.unitPrice.toFixed(2)}</Text>
-            <Text style={styles.tableColumn}>€{item.total.toFixed(2)}</Text>
-          </View>
-        ))}
+        {order.items.map((item, index) => {
+          // Calculate the total price for each item by multiplying quantity by unit price
+          // We use toFixed(2) to ensure we always show 2 decimal places for currency
+          const calculatedTotal = (item.quantity * item.unitPrice).toFixed(2);
 
-        <View style={styles.totalSection}>
-          <Text>IVA incluido à taxa em vigor ({order.vat})</Text>
-          <Text style={styles.totalLabel}>Total:</Text>
-          <Text style={styles.totalAmount}>
-            €{order.totalAmount.toFixed(2)}
-          </Text>
-        </View>
+          return (
+            <View key={index} style={styles.tableRow}>
+              <Text style={[styles.refColumn]}>{item.ref}</Text>
+              <Text style={[styles.descriptionColumn]}>{item.description}</Text>
+              <Text style={[styles.quantityColumn]}>{item.quantity}</Text>
+              <Text style={[styles.unitPriceColumn]}>
+                €{item.unitPrice.toFixed(2)}
+              </Text>
+              <Text style={[styles.totalColumn]}>€{calculatedTotal}</Text>
+            </View>
+          );
+        })}
+
+        {/* Calculate the total amount for all items */}
+        {(() => {
+          const calculatedTotalAmount = order.items.reduce((sum, item) => {
+            return sum + item.quantity * item.unitPrice;
+          }, 0);
+
+          return (
+            <View style={styles.totalSection}>
+              <View style={styles.totalRow}>
+                <Text style={styles.vatText}>
+                  IVA incluido à taxa em vigor ({order.vat})
+                </Text>
+                <View style={styles.quantityColumn} />
+                <Text style={[styles.unitPriceColumn, { fontWeight: 700 }]}>
+                  Total:
+                </Text>
+                <Text style={[styles.totalColumn, { fontWeight: 700 }]}>
+                  €{calculatedTotalAmount.toFixed(2)}
+                </Text>
+              </View>
+            </View>
+          );
+        })()}
 
         <View style={styles.transferDetails}>
           <Text style={styles.detailsTitle}>Os seus dados</Text>
@@ -111,40 +133,48 @@ export const OrderDocument: React.FC<DocumentData> = ({
           </View>
         </View>
 
-        <View style={styles.paymentSection}>
-          <Text style={styles.paymentTitle}>Nas seguintes condições</Text>
+        <View wrap={false}>
+          <View style={styles.paymentSection}>
+            <Text style={styles.paymentTitle}>Nas seguintes condições</Text>
 
-          <View style={styles.paymentTable}>
-            <View style={styles.paymentTableHeader}>
-              <View style={styles.valueColumn}>
-                <Text style={styles.headerText}>Valor</Text>
-              </View>
-              <View style={styles.dateColumn}>
-                <Text style={styles.headerText}>Data</Text>
-              </View>
-            </View>
-
-            {[1, 2, 3, 4].map((_, index) => (
-              <View key={index} style={styles.paymentTableRow}>
+            <View wrap={false} style={styles.paymentTable}>
+              <View style={styles.paymentTableHeader}>
                 <View style={styles.valueColumn}>
-                  <Text style={styles.cellText}> </Text>
+                  <Text style={styles.headerText}>Valor</Text>
+                </View>
+                <View style={styles.paymentMethodColumn}>
+                  <Text style={styles.headerText}>Meio de Pagamento</Text>
                 </View>
                 <View style={styles.dateColumn}>
-                  <Text style={styles.cellText}> </Text>
+                  <Text style={styles.headerText}>Data</Text>
                 </View>
               </View>
-            ))}
-          </View>
-        </View>
 
-        <View style={styles.signatureSection}>
-          <View style={styles.signatureBlock}>
-            <Text style={styles.signatureHeaders}>O cliente</Text>
-            <View style={styles.signatureLine} />
+              {[1, 2, 3, 4].map((_, index) => (
+                <View key={index} style={styles.paymentTableRow}>
+                  <View style={styles.valueColumn}>
+                    <Text style={styles.cellText}> </Text>
+                  </View>
+                  <View style={styles.paymentMethodColumn}>
+                    <Text style={styles.cellText}> </Text>
+                  </View>
+                  <View style={styles.dateColumn}>
+                    <Text style={styles.cellText}> </Text>
+                  </View>
+                </View>
+              ))}
+            </View>
           </View>
-          <View style={styles.signatureBlock}>
-            <Text style={styles.signatureHeaders}>Pela firma</Text>
-            <View style={styles.signatureLine} />
+
+          <View style={styles.signatureSection}>
+            <View style={styles.signatureBlock}>
+              <Text style={styles.signatureHeaders}>O cliente</Text>
+              <View style={styles.signatureLine} />
+            </View>
+            <View style={styles.signatureBlock}>
+              <Text style={styles.signatureHeaders}>Pela firma</Text>
+              <View style={styles.signatureLine} />
+            </View>
           </View>
         </View>
 
