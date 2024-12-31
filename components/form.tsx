@@ -6,6 +6,7 @@ import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
+import { pt } from 'date-fns/locale';
 import { CalendarIcon } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
@@ -230,12 +231,12 @@ export function SalesForm() {
                             <Button
                               variant={'outline'}
                               className={cn(
-                                'w-[240px] pl-3 text-left font-normal',
+                                'w-[340px] pl-3 text-left font-normal',
                                 !field.value && 'text-muted-foreground'
                               )}
                             >
                               {field.value ? (
-                                format(field.value, 'PPP')
+                                format(field.value, 'PPP', { locale: pt }) // Remember to change this once you scale.
                               ) : (
                                 <span>Escolha uma data</span>
                               )}
@@ -252,6 +253,7 @@ export function SalesForm() {
                               date > new Date() || date < new Date('1900-01-01')
                             }
                             initialFocus
+                            locale={pt} // Change this when you get customers outside Portugal.
                           />
                         </PopoverContent>
                       </Popover>
@@ -271,9 +273,6 @@ export function SalesForm() {
                       <FormControl>
                         <DynamicTable form={form} />
                       </FormControl>
-                      <FormDescription>
-                        Adicione os produtos da encomenda aqui.
-                      </FormDescription>
                       <FormMessage />
                     </FormItem>
                   )}
@@ -601,7 +600,7 @@ const formatOrderData = (values: FormValues): DocumentData => {
       order: {
         id: values.orderNumber.toString(),
         storeId: `OCT ${values.storeId}`,
-        date: format(values.date, DATE_FORMAT),
+        date: format(values.date, DATE_FORMAT, { locale: pt }),
         items: orderItems,
         vat: VAT_RATE,
         totalAmount,
