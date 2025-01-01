@@ -81,7 +81,8 @@ export function DynamicTable({ form }: DynamicTableProps) {
       <Card className='w-full'>
         <CardContent className='flex flex-col items-center justify-center p-6 text-center'>
           <PackageOpen
-            strokeWidth={1.3}
+            strokeWidth={1.2}
+            color='#4B0021'
             className='h-12 w-12 text-muted-foreground mb-4'
           />
           <h3 className='text-lg font-semibold mb-2'>
