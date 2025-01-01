@@ -11,7 +11,7 @@
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
     --popover-foreground: 222.2 84% 4.9%;
-    --primary: 340 65% 25%;
+    --primary: 334 100% 15%;
     --primary-foreground: 210 40% 98%;
     --secondary: 210 40% 96.1%;
     --secondary-foreground: 222.2 47.4% 11.2%;
@@ -73,5 +73,23 @@ body {
 }
 
 .table-row-exit {
+  animation: fadeOut 0.3s ease-out;
+}
+
+/* New styles for Collapsible component */
+.collapsible-transition {
+  transition: height 0.3s ease-in-out;
+}
+
+.collapsible-content-transition {
+  transition: all 0.3s ease-in-out;
+  overflow: hidden;
+}
+
+.collapsible-content-transition[data-state='open'] {
+  animation: fadeIn 0.3s ease-out;
+}
+
+.collapsible-content-transition[data-state='closed'] {
   animation: fadeOut 0.3s ease-out;
 }

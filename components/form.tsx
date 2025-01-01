@@ -65,6 +65,7 @@ export function SalesForm() {
   const [isGenerating, setIsGenerating] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
   const [documentData, setDocumentData] = useState<DocumentData | null>(null);
+  const [isCollapsibleOpen, setIsCollapsibleOpen] = useState(false);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
@@ -204,16 +205,24 @@ export function SalesForm() {
                 <h2 className='scroll-m-20 text-4xl font-semibold tracking-tight'>
                   Nova Encomenda
                 </h2>
-                <Collapsible className='w-full space-y-2 bg-[#fbf0dc]'>
+                <Collapsible
+                  open={isCollapsibleOpen}
+                  onOpenChange={setIsCollapsibleOpen}
+                  className='w-full space-y-2 bg-[#F6F3F0] rounded-lg collapsible-transition'
+                >
                   <CollapsibleTrigger asChild>
-                    <div className='flex w-full items-center justify-between space-x-4 px-8 py-6 cursor-pointer rounded-md transition-colors bg-[#fbf0dc]'>
-                      <h4 className='text-sm font-medium'>
-                        Rever Detalhes Automatizados
-                      </h4>
-                      <ChevronDown className='h-4 w-4 transition-transform duration-200 ease-in-out data-[state=open]:rotate-180' />
+                    <div className='flex w-full items-center justify-between space-x-4 px-8 py-6 cursor-pointer rounded-lg transition-colors bg-[#F6F3F0]'>
+                      <div className='flex items-center space-x-2'>
+                        <ChevronDown
+                          className={`h-4 w-4 transition-transform duration-200 ${
+                            isCollapsibleOpen ? 'rotate-180' : ''
+                          }`}
+                        />
+                        <h4>Rever Detalhes Automatizados</h4>
+                      </div>
                     </div>
                   </CollapsibleTrigger>
-                  <CollapsibleContent className='space-y-4 p-6 transition-all duration-200 ease-in-out'>
+                  <CollapsibleContent className='space-y-4 px-8 pb-6 collapsible-content-transition'>
                     <FormField
                       control={form.control}
                       name='orderNumber'
@@ -283,7 +292,7 @@ export function SalesForm() {
                   </CollapsibleContent>
                 </Collapsible>
 
-                <h2 className='scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"'>
+                <h2 className='scroll-m-20 border-b pb-2 text-3xl font-medium tracking-tight first:mt-0"'>
                   Produtos
                 </h2>
                 <FormField
@@ -562,6 +571,24 @@ export function SalesForm() {
               </>
             )}
           </form>
+          <style jsx>{`
+            .collapsible-transition {
+              transition: height 0.3s ease-in-out;
+            }
+
+            .collapsible-content-transition {
+              transition: all 0.3s ease-in-out;
+              overflow: hidden;
+            }
+
+            .collapsible-content-transition[data-state='open'] {
+              animation: fadeIn 0.3s ease-out;
+            }
+
+            .collapsible-content-transition[data-state='closed'] {
+              animation: fadeOut 0.3s ease-out;
+            }
+          `}</style>
         </Form>
       )}
     </BlobProvider>

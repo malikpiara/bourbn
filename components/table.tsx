@@ -90,8 +90,12 @@ export function DynamicTable({ form }: DynamicTableProps) {
           <p className='text-sm text-muted-foreground mb-4'>
             Comece por adicionar o seu primeiro produto.
           </p>
-          <Button onClick={handleAppend} className='flex items-center gap-2'>
-            <PlusCircle className='h-4 w-4' />
+          <Button
+            size={'lg'}
+            onClick={handleAppend}
+            className='flex items-center gap-2'
+          >
+            <PlusCircle className='h-6 w-6' />
             Adicionar Produto
           </Button>
         </CardContent>
@@ -277,7 +281,7 @@ export function DynamicTable({ form }: DynamicTableProps) {
                 </TableCell>
               </TableRow>
             ))}
-            <TableRow className='font-bold'>
+            <TableRow className='font-semibold'>
               <TableCell colSpan={2} className='text-right'>
                 Total:
               </TableCell>
