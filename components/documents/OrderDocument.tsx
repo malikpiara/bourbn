@@ -126,7 +126,8 @@ export const OrderDocument: React.FC<DocumentData> = ({
           <View style={styles.moreDetailsNotes}>
             {!customer.address.hasElevator && (
               <>
-                <Text>Notas</Text>
+                <Text style={styles.deliveryAddressTitle}>Notas</Text>
+                {order.notes && <Text>{order.notes}</Text>}
                 <Text>Não há elevador</Text>
               </>
             )}

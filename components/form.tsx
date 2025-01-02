@@ -29,13 +29,6 @@ import {
   PopoverTrigger,
 } from '@/components/ui/popover';
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
-import {
   InputOTP,
   InputOTPGroup,
   InputOTPSeparator,
@@ -45,17 +38,14 @@ import { DynamicTable } from './table';
 import { formSchema, FormValues } from '@/lib/schema';
 import { useCallback, useEffect, useState } from 'react';
 import { DocumentData } from '@/types/document';
-import {
-  COMPANY_INFO,
-  VAT_RATE,
-  DEFAULT_ORDER_NUMBER,
-  DATE_FORMAT,
-} from '@/lib/constants';
+import { DEFAULT_ORDER_NUMBER } from '@/lib/constants';
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
+import { formatOrderData, downloadPdf } from '@/lib/form-utils';
+import { StoreSelection } from './form-sections/StoreSelection';
 
 // autoComplete='new-password' is a hack I put together to disable
 // the browser autofill.
@@ -93,53 +83,17 @@ export function SalesForm() {
     setStep(2);
   };
 
-  const StoreSelection = () => (
-    <div className='space-y-8'>
-      <h2 className='scroll-m-20 text-4xl font-semibold tracking-tight'>
-        Selecione a Loja
-      </h2>
-      <FormField
-        control={form.control}
-        name='storeId'
-        render={({ field }) => (
-          <FormItem>
-            <FormLabel>Loja</FormLabel>
-            <Select
-              onValueChange={(value) => handleStoreSelect(value)}
-              defaultValue={field.value}
-            >
-              <FormControl>
-                <SelectTrigger>
-                  <SelectValue placeholder='Selecione a loja onde a venda está a ser executada' />
-                </SelectTrigger>
-              </FormControl>
-              <SelectContent>
-                <SelectItem value='1'>1 - Clássica</SelectItem>
-                <SelectItem value='3'>3 - Moderna</SelectItem>
-                <SelectItem value='6'>6 - Iluminação</SelectItem>
-              </SelectContent>
-            </Select>
-            <FormMessage />
-          </FormItem>
-        )}
-      />
-    </div>
-  );
-
   const createSubmitHandler = useCallback(
     (url: string | null) => async (values: FormValues) => {
       // If we're already generating, don't allow another submission
       if (isGenerating) {
         return;
       }
+
       setIsGenerating(true);
       setPdfError(null);
 
       try {
-        // Log the form values to help us debug
-        console.log('Form Values:', values);
-        console.log('Table Entries:', values.tableEntries);
-
         // Validate form data using zod
         const result = formSchema.safeParse(values);
         if (!result.success) {
@@ -148,20 +102,35 @@ export function SalesForm() {
           return;
         }
 
-        // Transform form data and store it
+        // Transform form data
         const formattedDocumentData = formatOrderData(values);
-        console.log('Formatted Data:', formattedDocumentData);
-
         setDocumentData(formattedDocumentData);
 
-        // Wait a moment for state to update
-        await new Promise((resolve) => setTimeout(resolve, 100));
-
-        // Wait for the PDF to be generated
+        // Wait for the PDF URL to be ready
         if (!url) {
-          throw new Error('Aguardando geração do PDF...');
-        } // Now we know we have a URL, we can download
-        downloadPdf(url, formattedDocumentData.order.id);
+          // Instead of throwing an error, we'll wait a bit and check again
+          let attempts = 0;
+          const maxAttempts = 5;
+          const delay = 1000; // 1 second
+
+          while (!url && attempts < maxAttempts) {
+            await new Promise((resolve) => setTimeout(resolve, delay));
+            attempts++;
+            console.log(`Waiting for PDF URL... Attempt ${attempts}`);
+          }
+
+          if (!url) {
+            throw new Error(
+              'Não foi possível gerar o PDF. Por favor, tente novamente.'
+            );
+          }
+        }
+
+        // Download the PDF
+        await downloadPdf(url, formattedDocumentData.order.id);
+
+        // Optional: Show success message
+        console.log('PDF generated and downloaded successfully');
       } catch (error) {
         console.error('Error details:', error);
         setPdfError(
@@ -199,7 +168,7 @@ export function SalesForm() {
             className='space-y-8'
           >
             {step === 1 ? (
-              <StoreSelection />
+              <StoreSelection form={form} onStoreSelect={handleStoreSelect} />
             ) : (
               <>
                 <h2 className='scroll-m-20 text-4xl font-semibold tracking-tight'>
@@ -560,12 +529,17 @@ export function SalesForm() {
                   disabled={!form.formState.isValid || isGenerating || loading}
                   className='w-full'
                 >
-                  {isGenerating || loading ? 'A gerar PDF...' : 'Submeter'}
+                  {isGenerating
+                    ? 'A gerar PDF...'
+                    : loading
+                    ? 'A preparar documento...'
+                    : 'Submeter'}
                 </Button>
 
                 {(pdfError || blobError) && (
                   <p className='text-sm text-red-700 mt-2'>
-                    {pdfError || 'Ocorreu um erro ao gerar o documento.'}
+                    {pdfError ||
+                      'Ocorreu um erro ao gerar o documento. Por favor, tente novamente.'}
                   </p>
                 )}
               </>
@@ -594,81 +568,3 @@ export function SalesForm() {
     </BlobProvider>
   );
 }
-
-const formatNIF = (nif: string): string => {
-  // Format NIF with spaces: 123 456 789
-  return nif.replace(/(\d{3})(?=\d)/g, '$1 ');
-};
-
-const formatPostalCode = (postalCode: string): string => {
-  if (!postalCode) return postalCode;
-  // Format postal code: 1234-567
-  return postalCode.replace(/(\d{4})(\d{3})/, '$1-$2');
-};
-
-// Helper function to trigger the PDF download
-const downloadPdf = (url: string, documentId: string) => {
-  const link = document.createElement('a');
-  link.href = url;
-  link.download = `encomenda-${documentId}.pdf`;
-  document.body.appendChild(link);
-  link.click();
-  document.body.removeChild(link);
-};
-
-const formatOrderData = (values: FormValues): DocumentData => {
-  try {
-    // Validate that we have at least one table entry
-    if (!values.tableEntries.length) {
-      throw new Error('A encomenda deve ter pelo menos um produto.');
-    }
-
-    const orderItems = values.tableEntries.map((entry) => {
-      const total = entry.quantity * entry.price;
-      if (isNaN(total)) {
-        throw new Error('Erro ao calcular o total do produto.');
-      }
-
-      return {
-        ref: entry.ref,
-        description: entry.designation,
-        quantity: entry.quantity,
-        unitPrice: entry.price,
-        total,
-      };
-    });
-
-    const totalAmount = orderItems.reduce((sum, item) => sum + item.total, 0);
-    if (isNaN(totalAmount)) {
-      throw new Error('Erro ao calcular o total da encomenda.');
-    }
-
-    return {
-      company: COMPANY_INFO, // From constants
-      customer: {
-        name: values.name,
-        email: values.email,
-        phone: values.phoneNumber,
-        nif: formatNIF(values.nif),
-        address: {
-          address1: values.address1,
-          address2: values.address2 || '',
-          postalCode: formatPostalCode(values.postalCode),
-          city: values.city,
-          hasElevator: values.elevator || false,
-        },
-      },
-      order: {
-        id: values.orderNumber.toString(),
-        storeId: `OCT ${values.storeId}`,
-        date: format(values.date, DATE_FORMAT, { locale: pt }),
-        items: orderItems,
-        vat: VAT_RATE,
-        totalAmount,
-      },
-    };
-  } catch (error) {
-    console.error('Error formatting order data:', error);
-    throw error;
-  }
-};

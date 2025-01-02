@@ -36,6 +36,7 @@ export interface Order {
   items: OrderItem[];
   vat: string;
   totalAmount: number;
+  notes?: string;
 }
 
 // Main interface that combines all the above
