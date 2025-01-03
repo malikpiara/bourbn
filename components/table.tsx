@@ -110,14 +110,22 @@ export function DynamicTable({ form }: DynamicTableProps) {
         <Table className='w-full'>
           <TableHeader>
             <TableRow>
-              <TableHead className='w-[200px]'>Referência</TableHead>
-              <TableHead className='w-[100px]'>Quantidade</TableHead>
-              <TableHead className='min-w-[200px]'>Designação</TableHead>
-              <TableHead className='w-[200px]'>Preço Unitário</TableHead>
-              <TableHead className='w-[150px]'>Ações</TableHead>
+              <TableHead className='w-[200px] text-slate-800'>
+                Referência
+              </TableHead>
+              <TableHead className='w-[100px] text-slate-800'>
+                Quantidade
+              </TableHead>
+              <TableHead className='min-w-[200px] text-slate-800'>
+                Designação
+              </TableHead>
+              <TableHead className='w-[200px] text-slate-800'>
+                Preço Unitário
+              </TableHead>
+              <TableHead className='w-[150px] text-slate-800'>Ações</TableHead>
             </TableRow>
           </TableHeader>
-          <TableBody>
+          <TableBody className="before:content-[''] before:block before:h-4">
             {fields.map((field, index) => (
               <TableRow key={field.id} className='group'>
                 <TableCell className='p-2'>

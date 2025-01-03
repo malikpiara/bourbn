@@ -261,9 +261,10 @@ export function SalesForm() {
                   </CollapsibleContent>
                 </Collapsible>
 
-                <h2 className='scroll-m-20 border-b pb-2 text-3xl font-medium tracking-tight first:mt-0"'>
-                  Produtos
+                <h2 className='scroll-m-20 mb-4 text-2xl font-semibold tracking-tight first:mt-0"'>
+                  Lista de Produtos
                 </h2>
+
                 <FormField
                   control={form.control}
                   name='tableEntries'
