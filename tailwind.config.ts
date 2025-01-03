@@ -19,8 +19,7 @@ export default {
         'caret-blink': 'caret-blink 1.25s ease-out infinite',
       },
       fontSize: {
-        // Add custom font sizes
-        base: '18px', // Increase base font size
+        base: '18px',
         lg: '19px',
         xl: '20px',
         '2xl': '24px',
