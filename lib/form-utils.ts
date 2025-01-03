@@ -42,16 +42,16 @@ export const formatOrderData = (values: FormValues): DocumentData => {
     }
 
     const orderItems = values.tableEntries.map((entry) => {
-      const total = entry.quantity * entry.price;
+      const total = entry.quantity * entry.unitPrice;
       if (isNaN(total)) {
         throw new Error('Erro ao calcular o total do produto.');
       }
 
       return {
         ref: entry.ref,
-        description: entry.designation,
+        description: entry.description,
         quantity: entry.quantity,
-        unitPrice: entry.price,
+        unitPrice: entry.unitPrice,
         total,
       };
     });

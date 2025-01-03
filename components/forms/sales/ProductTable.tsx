@@ -53,9 +53,9 @@ export function ProductTable({ form }: ProductTableProps) {
     const newEntry = {
       id: fields.length,
       ref: '',
-      designation: '',
+      description: '',
       quantity: 1,
-      price: 0,
+      unitPrice: 0,
     };
     fieldArrayAppend(newEntry);
   };
@@ -72,8 +72,9 @@ export function ProductTable({ form }: ProductTableProps) {
 
   const totalPrice = fields.reduce((sum, field, index) => {
     const quantity = form.watch(`tableEntries.${index}.quantity`) || 0;
-    const price = form.watch(`tableEntries.${index}.price`) || 0;
-    return sum + quantity * price;
+    const price = form.watch(`tableEntries.${index}.unitPrice`) || 0;
+    const total = sum + quantity * price;
+    return total;
   }, 0);
 
   if (fields.length === 0) {
@@ -189,7 +190,7 @@ export function ProductTable({ form }: ProductTableProps) {
                 </TableCell>
                 <TableCell className='p-2'>
                   <Controller
-                    name={`tableEntries.${index}.designation` as const}
+                    name={`tableEntries.${index}.description` as const}
                     control={form.control}
                     rules={{ required: 'Required' }}
                     render={({ field, fieldState: { error } }) => (
@@ -210,7 +211,7 @@ export function ProductTable({ form }: ProductTableProps) {
                 </TableCell>
                 <TableCell className='p-2'>
                   <Controller
-                    name={`tableEntries.${index}.price` as const}
+                    name={`tableEntries.${index}.unitPrice` as const}
                     control={form.control}
                     rules={{
                       required: 'Required',

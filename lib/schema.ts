@@ -3,11 +3,11 @@ import { z } from 'zod';
 export const tableEntrySchema = z.object({
   id: z.number(),
   ref: z.string().min(3, 'A referência deve ter pelo menos 3 caracteres.'),
-  designation: z
+  description: z
     .string()
     .min(5, 'O nome do produto deve ter pelo menos 5 caracteres.'),
   quantity: z.number().min(1, 'A quantidade deve ser pelo menos 1.'),
-  price: z.number().min(0, 'O preço não pode ser negativo.'),
+  unitPrice: z.number().min(0, 'O preço não pode ser negativo.'),
 });
 
 export const formSchema = z.object({
