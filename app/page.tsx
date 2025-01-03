@@ -3,7 +3,7 @@ import dynamic from 'next/dynamic';
 
 // Dynamically import the SalesForm component with client-side only rendering
 const SalesForm = dynamic(
-  () => import('@/components/form').then((mod) => mod.SalesForm),
+  () => import('@/components/forms/sales').then((mod) => mod.SalesForm),
   {
     ssr: false,
     loading: () => (

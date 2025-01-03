@@ -21,20 +21,13 @@ import {
 } from '@/components/ui/form';
 import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
-import { Checkbox } from '@/components/ui/checkbox';
 import { Calendar } from '@/components/ui/calendar';
 import {
   Popover,
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
-import {
-  InputOTP,
-  InputOTPGroup,
-  InputOTPSeparator,
-  InputOTPSlot,
-} from '@/components/ui/input-otp';
-import { DynamicTable } from './table';
+import { DynamicTable } from '../../table';
 import { formSchema, FormValues } from '@/lib/schema';
 import { useCallback, useEffect, useState } from 'react';
 import { DocumentData } from '@/types/document';
@@ -45,7 +38,8 @@ import {
   CollapsibleTrigger,
 } from '@/components/ui/collapsible';
 import { formatOrderData, downloadPdf } from '@/lib/form-utils';
-import { StoreSelection } from './form-sections/StoreSelection';
+import { StoreSelection } from '../../form-sections/StoreSelection';
+import { CustomerSection } from './CustomerSection';
 
 // autoComplete='new-password' is a hack I put together to disable
 // the browser autofill.
@@ -309,221 +303,7 @@ export function SalesForm() {
                   )}
                 />
 
-                <h2 className='scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"'>
-                  Dados do Cliente
-                </h2>
-
-                <FormField
-                  control={form.control}
-                  name='name'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Nome</FormLabel>
-                      <FormControl>
-                        <Input autoComplete='false' {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Escreve o primeiro e último nome, ou o nome da empresa.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='email'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email do cliente</FormLabel>
-                      <FormControl>
-                        <Input autoComplete='new-password' {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        O cliente vai receber notificações através deste
-                        endereço.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name='phoneNumber'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Telefone do cliente</FormLabel>
-                      <FormControl>
-                        <Input autoComplete='new-password' {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Pode ser usado para auxiliar a entrega.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='nif'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Número de contribuinte</FormLabel>
-                      <FormControl>
-                        <InputOTP
-                          maxLength={9}
-                          {...field}
-                          onKeyDown={(event) => {
-                            // Allow only numeric keys, Backspace, Delete, Arrow keys, etc.
-                            if (
-                              !/^[0-9]$/.test(event.key) && // Numeric keys
-                              event.key !== 'Backspace' &&
-                              event.key !== 'Delete' &&
-                              event.key !== 'ArrowLeft' &&
-                              event.key !== 'ArrowRight' &&
-                              event.key !== 'Tab'
-                            ) {
-                              event.preventDefault(); // Block other keys
-                            }
-                          }}
-                        >
-                          <InputOTPGroup>
-                            <InputOTPSlot index={0} />
-                            <InputOTPSlot index={1} />
-                            <InputOTPSlot index={2} />
-                            <InputOTPSlot index={3} />
-                            <InputOTPSlot index={4} />
-                            <InputOTPSlot index={5} />
-                            <InputOTPSlot index={6} />
-                            <InputOTPSlot index={7} />
-                            <InputOTPSlot index={8} />
-                          </InputOTPGroup>
-                        </InputOTP>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='address1'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Linha de morada 1</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Rua do Carmo 12'
-                          autoComplete='new-password'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>Nome e número da rua</FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='address2'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Linha de morada 2</FormLabel>
-                      <FormControl>
-                        <Input
-                          placeholder='Lote B, 3dto'
-                          autoComplete='new-password'
-                          {...field}
-                        />
-                      </FormControl>
-                      <FormDescription>
-                        Apartamento, bloco, edificio, andar, etç.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='postalCode'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Código Postal</FormLabel>
-                      <FormControl>
-                        <InputOTP
-                          maxLength={7}
-                          {...field}
-                          onKeyDown={(event) => {
-                            // Allow only numeric keys, Backspace, Delete, Arrow keys, etc.
-                            if (
-                              !/^[0-9]$/.test(event.key) && // Numeric keys
-                              event.key !== 'Backspace' &&
-                              event.key !== 'Delete' &&
-                              event.key !== 'ArrowLeft' &&
-                              event.key !== 'ArrowRight' &&
-                              event.key !== 'Tab'
-                            ) {
-                              event.preventDefault(); // Block other keys
-                            }
-                          }}
-                        >
-                          <InputOTPGroup>
-                            <InputOTPSlot index={0} />
-                            <InputOTPSlot index={1} />
-                            <InputOTPSlot index={2} />
-                            <InputOTPSlot index={3} />
-                          </InputOTPGroup>
-                          <InputOTPSeparator />
-                          <InputOTPGroup>
-                            <InputOTPSlot index={4} />
-                            <InputOTPSlot index={5} />
-                            <InputOTPSlot index={6} />
-                          </InputOTPGroup>
-                        </InputOTP>
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='city'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Cidade</FormLabel>
-                      <FormControl>
-                        <Input autoComplete='new-password' {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
-                <FormField
-                  control={form.control}
-                  name='elevator'
-                  render={({ field }) => (
-                    <FormItem className='flex flex-row items-start space-x-3 space-y-0 rounded-md border p-4'>
-                      <FormControl>
-                        <Checkbox
-                          checked={field.value}
-                          onCheckedChange={field.onChange}
-                        />
-                      </FormControl>
-                      <div className='space-y-1 leading-none'>
-                        <FormLabel>Há elevador</FormLabel>
-                        <FormDescription>
-                          Se o elevador não estiver operacional, por favor deixe
-                          a caixa vazia.
-                        </FormDescription>
-                      </div>
-                    </FormItem>
-                  )}
-                />
+                <CustomerSection form={form} />
 
                 <Button
                   type='submit'
