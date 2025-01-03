@@ -34,7 +34,7 @@ const handleOTPKeyDown = (event: React.KeyboardEvent) => {
   }
 };
 
-export function CustomerSection({ form, className }: CustomerSectionProps) {
+function CustomerSection({ form, className }: CustomerSectionProps) {
   return (
     <div className={`space-y-8 ${className || ''}`}>
       <h2 className='scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"'>
@@ -215,3 +215,5 @@ export function CustomerSection({ form, className }: CustomerSectionProps) {
     </div>
   );
 }
+
+export default CustomerSection;

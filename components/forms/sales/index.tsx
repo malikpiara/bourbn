@@ -5,41 +5,17 @@ import { mockData } from '@/lib/mockData';
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
-import { format } from 'date-fns';
-import { pt } from 'date-fns/locale';
-import { CalendarIcon, ChevronDown } from 'lucide-react';
-import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
-import {
-  Form,
-  FormControl,
-  FormDescription,
-  FormField,
-  FormItem,
-  FormLabel,
-  FormMessage,
-} from '@/components/ui/form';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Calendar } from '@/components/ui/calendar';
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from '@/components/ui/popover';
-import { DynamicTable } from '../../table';
+import { Form } from '@/components/ui/form';
 import { formSchema, FormValues } from '@/lib/schema';
 import { useCallback, useEffect, useState } from 'react';
 import { DocumentData } from '@/types/document';
 import { DEFAULT_ORDER_NUMBER } from '@/lib/constants';
-import {
-  Collapsible,
-  CollapsibleContent,
-  CollapsibleTrigger,
-} from '@/components/ui/collapsible';
 import { formatOrderData, downloadPdf } from '@/lib/form-utils';
 import { StoreSelection } from '../../form-sections/StoreSelection';
-import { CustomerSection } from './CustomerSection';
+import CustomerSection from './CustomerSection';
+import ProductSection from './ProductSection';
+import { OrderMetadata } from './OrderMetadata';
 
 // autoComplete='new-password' is a hack I put together to disable
 // the browser autofill.
@@ -168,141 +144,14 @@ export function SalesForm() {
                 <h2 className='scroll-m-20 text-4xl font-semibold tracking-tight'>
                   Nova Encomenda
                 </h2>
-                <Collapsible
-                  open={isCollapsibleOpen}
+
+                <OrderMetadata
+                  form={form}
+                  isOpen={isCollapsibleOpen}
                   onOpenChange={setIsCollapsibleOpen}
-                  className='w-full space-y-2 bg-[#F6F3F0] rounded-lg collapsible-transition'
-                >
-                  <CollapsibleTrigger asChild>
-                    <div className='flex w-full items-center justify-between space-x-4 px-8 py-6 cursor-pointer rounded-lg transition-colors bg-[#F6F3F0]'>
-                      <div className='flex items-center space-x-2'>
-                        <ChevronDown
-                          className={`h-4 w-4 transition-transform duration-200 ${
-                            isCollapsibleOpen ? 'rotate-180' : ''
-                          }`}
-                        />
-                        <h4>Rever Detalhes Automatizados</h4>
-                      </div>
-                    </div>
-                  </CollapsibleTrigger>
-                  <CollapsibleContent className='space-y-4 px-8 pb-6 collapsible-content-transition'>
-                    <FormField
-                      control={form.control}
-                      name='orderNumber'
-                      render={({ field }) => (
-                        <FormItem>
-                          <FormLabel>Número da Encomenda</FormLabel>
-                          <FormControl>
-                            <Input
-                              placeholder='6111'
-                              autoComplete='false'
-                              {...field}
-                            />
-                          </FormControl>
-                          <FormDescription>
-                            O número da encomenda é gerado automaticamente.
-                          </FormDescription>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                    <FormField
-                      control={form.control}
-                      name='date'
-                      render={({ field }) => (
-                        <FormItem className='flex flex-col'>
-                          <FormLabel>Data da encomenda</FormLabel>
-                          <Popover>
-                            <PopoverTrigger asChild>
-                              <FormControl>
-                                <Button
-                                  variant={'outline'}
-                                  className={cn(
-                                    'w-[340px] pl-3 text-left font-normal',
-                                    !field.value && 'text-muted-foreground'
-                                  )}
-                                >
-                                  {field.value ? (
-                                    format(field.value, 'PPP', { locale: pt })
-                                  ) : (
-                                    <span>Escolha uma data</span>
-                                  )}
-                                  <CalendarIcon className='ml-auto h-4 w-4 opacity-50' />
-                                </Button>
-                              </FormControl>
-                            </PopoverTrigger>
-                            <PopoverContent
-                              className='w-auto p-0'
-                              align='start'
-                            >
-                              <Calendar
-                                mode='single'
-                                selected={field.value}
-                                onSelect={field.onChange}
-                                disabled={(date) =>
-                                  date > new Date() ||
-                                  date < new Date('1900-01-01')
-                                }
-                                initialFocus
-                                locale={pt}
-                              />
-                            </PopoverContent>
-                          </Popover>
-                          <FormMessage />
-                        </FormItem>
-                      )}
-                    />
-                  </CollapsibleContent>
-                </Collapsible>
-
-                <h2 className='scroll-m-20 mb-4 text-2xl font-semibold tracking-tight first:mt-0"'>
-                  Lista de Produtos
-                </h2>
-
-                <FormField
-                  control={form.control}
-                  name='tableEntries'
-                  render={({ fieldState: { error } }) => (
-                    <FormItem>
-                      <FormControl>
-                        <DynamicTable form={form} />
-                      </FormControl>
-                      <div className='space-y-2'>
-                        {error?.type === 'too_small' && (
-                          <p className='text-sm font-medium text-destructive'>
-                            Por favor, adicione pelo menos um produto à
-                            encomenda.
-                          </p>
-                        )}
-                        {error && error.type !== 'too_small' && (
-                          <p className='text-sm font-medium text-destructive'>
-                            Verifique se todos os campos dos produtos estão
-                            preenchidos corretamente.
-                          </p>
-                        )}
-                      </div>
-                    </FormItem>
-                  )}
                 />
 
-                <FormField
-                  control={form.control}
-                  name='notes'
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Observações</FormLabel>
-                      <FormControl>
-                        <Textarea className='resize-none' {...field} />
-                      </FormControl>
-                      <FormDescription>
-                        Notas importantes que vão ser lidas pela equipa mas que
-                        não vão para o cliente.
-                      </FormDescription>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-
+                <ProductSection form={form} />
                 <CustomerSection form={form} />
 
                 <Button
@@ -326,24 +175,6 @@ export function SalesForm() {
               </>
             )}
           </form>
-          <style jsx>{`
-            .collapsible-transition {
-              transition: height 0.3s ease-in-out;
-            }
-
-            .collapsible-content-transition {
-              transition: all 0.3s ease-in-out;
-              overflow: hidden;
-            }
-
-            .collapsible-content-transition[data-state='open'] {
-              animation: fadeIn 0.3s ease-out;
-            }
-
-            .collapsible-content-transition[data-state='closed'] {
-              animation: fadeOut 0.3s ease-out;
-            }
-          `}</style>
         </Form>
       )}
     </BlobProvider>

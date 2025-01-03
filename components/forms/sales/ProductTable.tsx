@@ -33,11 +33,11 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 
-interface DynamicTableProps {
+export interface ProductTableProps {
   form: UseFormReturn<FormValues>;
 }
 
-export function DynamicTable({ form }: DynamicTableProps) {
+export function ProductTable({ form }: ProductTableProps) {
   const {
     fields,
     append: fieldArrayAppend,
