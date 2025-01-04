@@ -24,9 +24,14 @@ export const formSchema = z.object({
   date: z.date({
     required_error: 'A date of birth is required.',
   }),
-  email: z.string().email().min(5, {
-    message: 'O nome deve ter pelo menos 5 caracteres.',
-  }),
+  email: z
+    .union([
+      z.string().email().min(5, {
+        message: 'O nome deve ter pelo menos 5 caracteres.',
+      }),
+      z.string().length(0), // Allow empty string
+    ])
+    .optional(), // Make the whole field optional
   phoneNumber: z
     .string()
     .length(9, { message: 'O número deve ter 9 caracteres.' })

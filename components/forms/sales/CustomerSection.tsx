@@ -65,10 +65,20 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
           <FormItem>
             <FormLabel>Email do cliente</FormLabel>
             <FormControl>
-              <Input type='email' autoComplete='new-password' {...field} />
+              <Input
+                type='email'
+                autoComplete='new-password'
+                {...field}
+                value={field.value || ''} // Handle undefined/null values
+                onChange={(e) => {
+                  const value = e.target.value;
+                  field.onChange(value || undefined); // Set to undefined if empty
+                }}
+              />
             </FormControl>
             <FormDescription>
-              O cliente vai receber notificações através deste endereço.
+              O cliente vai receber notificações através deste endereço se
+              fornecido.
             </FormDescription>
             <FormMessage />
           </FormItem>

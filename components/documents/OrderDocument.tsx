@@ -101,12 +101,20 @@ export const OrderDocument: React.FC<DocumentData> = ({
         <View style={styles.transferDetails}>
           <Text style={styles.detailsTitle}>Os seus dados</Text>
           <View>
-            <Text style={styles.detailsLabel}>Email</Text>
-            <Text style={styles.detailsValue}>{customer.email}</Text>
+            <Text style={styles.detailsLabel}>
+              {customer.email ? 'Email' : 'Telefone'}
+            </Text>
+            <Text style={styles.detailsValue}>
+              {customer.email || customer.phone}
+            </Text>
           </View>
           <View>
-            <Text style={styles.detailsLabel}>Telefone</Text>
-            <Text style={styles.detailsValue}>{customer.phone}</Text>
+            <Text style={styles.detailsLabel}>
+              {customer.email ? 'Telefone' : ''}
+            </Text>
+            <Text style={styles.detailsValue}>
+              {customer.email ? customer.phone : ''}
+            </Text>
           </View>
         </View>
 

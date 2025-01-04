@@ -16,7 +16,7 @@ export interface Company {
 export interface Customer {
   name: string;
   nif?: string;
-  email: string;
+  email?: string;
   phone: string;
   address: Address;
 }

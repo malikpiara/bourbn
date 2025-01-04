@@ -33,15 +33,8 @@ export const mockData: DocumentData = {
         total: 123.0,
       },
       {
-        ref: 'K-006',
-        description: 'Mesa quadrada Kare',
-        quantity: 3,
-        unitPrice: 93,
-        total: 123.0,
-      },
-      {
-        ref: 'K-006',
-        description: 'Mesa quadrada Kare',
+        ref: 'K-009',
+        description: 'Mesa triangular Kare',
         quantity: 3,
         unitPrice: 93,
         total: 123.0,
