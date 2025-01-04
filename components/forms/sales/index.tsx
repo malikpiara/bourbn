@@ -1,13 +1,12 @@
 import { BlobProvider } from '@react-pdf/renderer';
 import { OrderDocument } from '@/components/documents/OrderDocument';
-import { mockData } from '@/lib/mockData';
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { formSchema, FormValues } from '@/lib/schema';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useState } from 'react';
 import { DocumentData } from '@/types/document';
 import { DEFAULT_ORDER_NUMBER } from '@/lib/constants';
 import { formatOrderData, downloadPdf } from '@/lib/form-utils';
