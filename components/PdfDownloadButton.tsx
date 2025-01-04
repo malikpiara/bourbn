@@ -3,7 +3,7 @@
 import { BlobProvider } from '@react-pdf/renderer';
 import { OrderDocument } from '@/components/documents/OrderDocument';
 import React from 'react';
-import { mockData } from '@/lib/mockData';
+import { mockData } from '@/lib/mocks/mockData';
 
 export const PdfDownloadButton = () => {
   return (

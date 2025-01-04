@@ -3,7 +3,7 @@ import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { CalendarIcon, ChevronDown } from 'lucide-react';
 import { FormValues } from '@/lib/schema';
-import { cn } from '@/lib/utils';
+import { cn } from '@/utils/tailwind';
 import {
   Collapsible,
   CollapsibleContent,

@@ -12,7 +12,7 @@ import { Input } from '@/components/ui/input';
 import { PlusCircle, Trash2, PackageOpen } from 'lucide-react';
 import { useFieldArray, UseFormReturn, Controller } from 'react-hook-form';
 import { FormValues } from '@/lib/schema';
-import { formatCurrency } from '@/utils/formatCurrency';
+import { formatCurrency } from '@/utils/format/currency';
 import {
   AlertDialog,
   AlertDialogAction,

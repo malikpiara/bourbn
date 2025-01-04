@@ -9,12 +9,13 @@ import { formSchema, FormValues } from '@/lib/schema';
 import { useCallback, useState } from 'react';
 import { DocumentData } from '@/types/document';
 import { DEFAULT_ORDER_NUMBER } from '@/lib/constants';
-import { formatOrderData, downloadPdf } from '@/lib/form-utils';
-import { StoreSelection } from '../../form-sections/StoreSelection';
+import { downloadPdf } from '@/utils/form';
+import { formatOrderData } from '@/utils/format';
+import { StoreSelection } from './StoreSelection';
 import CustomerSection from './CustomerSection';
 import ProductSection from './ProductSection';
 import { OrderMetadata } from './OrderMetadata';
-import { fillFormWithTestData } from '@/lib/testData';
+import { fillFormWithTestData } from '@/lib/mocks/testData';
 
 // Define our form steps
 type FormStep = 'store' | 'details' | 'preview';

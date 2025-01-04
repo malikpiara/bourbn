@@ -1,4 +1,4 @@
-import { FormValues } from './schema';
+import { FormValues } from '../schema';
 import { mockData } from './mockData';
 import { UseFormReturn } from 'react-hook-form';
 

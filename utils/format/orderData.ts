@@ -3,36 +3,7 @@ import { DocumentData } from '@/types/document';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { COMPANY_INFO, VAT_RATE, DATE_FORMAT } from '@/lib/constants';
-
-export const formatNIF = (nif: string): string => {
-  return nif.replace(/(\d{3})(?=\d)/g, '$1 ');
-};
-
-export const formatPostalCode = (postalCode: string): string => {
-  if (!postalCode) return postalCode;
-  return postalCode.replace(/(\d{4})(\d{3})/, '$1-$2');
-};
-
-export const downloadPdf = (url: string, documentId: string): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    try {
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `encomenda-${documentId}.pdf`;
-
-      // Add event listeners to track success/failure
-      link.addEventListener('click', () => {
-        setTimeout(resolve, 1000); // Resolve after a short delay
-      });
-
-      document.body.appendChild(link);
-      link.click();
-      document.body.removeChild(link);
-    } catch (error) {
-      reject(error);
-    }
-  });
-};
+import { formatNIF, formatPostalCode } from './form';
 
 export const formatOrderData = (values: FormValues): DocumentData => {
   try {
