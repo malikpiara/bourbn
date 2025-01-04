@@ -245,39 +245,32 @@ export function ProductTable({ form }: ProductTableProps) {
                       <div>
                         <Input
                           {...field}
-                          type='text'
+                          type='text' // Allows for commas and raw input
                           placeholder='Preço'
-                          value={field.value || ''}
+                          value={field.value || ''} // Keep input blank if no value
                           className='w-full'
                           onChange={(e) => {
                             const value = e.target.value;
-                            field.onChange(value);
+                            field.onChange(value); // Allow raw input
                           }}
                           onBlur={(e) => {
-                            // Get the current display value
-                            let displayValue = e.target.value;
-
-                            // Convert to number for storage and validation
-                            const rawValue = displayValue.replace(',', '.');
+                            const rawValue = e.target.value.replace(',', '.');
                             const parsedValue = parseFloat(rawValue);
 
                             if (!isNaN(parsedValue)) {
-                              // If the value is valid but doesn't include a comma and decimal places,
-                              // format it to show two decimal places
-                              if (!displayValue.includes(',')) {
-                                displayValue = parsedValue
-                                  .toFixed(2)
-                                  .replace('.', ',');
-                                e.target.value = displayValue;
-                              }
-                              // Store the numerical value for calculations
+                              e.target.value = parsedValue.toFixed(2); // Format to 2 decimal places
                               field.onChange(parsedValue);
                             } else {
-                              // Handle invalid input
-                              e.target.value = '0,00';
+                              e.target.value = '';
                               field.onChange(0);
                             }
                             field.onBlur();
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                              e.preventDefault(); // Prevent default form submission behavior
+                              (e.target as HTMLInputElement).blur(); // Blur the input on Enter key
+                            }
                           }}
                         />
                         {error && (
