@@ -134,12 +134,11 @@ export function SalesForm() {
       {currentStep === 'preview' ? (
         <BlobProvider document={<OrderDocument {...documentData!} />}>
           {({ url, loading, error: blobError }) => (
-            <div className='space-y-6'>
+            <div className='space-y-6 animate-slide-fade'>
               <h2 className='scroll-m-20 text-4xl font-semibold tracking-tight'>
                 Pré-visualização do Documento
               </h2>
 
-              {/* Preview content would go here - you'll need to create this component */}
               <div className='border rounded-lg p-4 bg-gray-50'>
                 <h3 className='text-lg font-medium mb-2'>
                   Detalhes da Encomenda

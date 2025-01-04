@@ -119,25 +119,6 @@ export function OrderMetadata({
           />
         </CollapsibleContent>
       </Collapsible>
-
-      <style jsx>{`
-        .collapsible-transition {
-          transition: height 0.3s ease-in-out;
-        }
-
-        .collapsible-content-transition {
-          transition: all 0.3s ease-in-out;
-          overflow: hidden;
-        }
-
-        .collapsible-content-transition[data-state='open'] {
-          animation: fadeIn 0.3s ease-out;
-        }
-
-        .collapsible-content-transition[data-state='closed'] {
-          animation: fadeOut 0.3s ease-out;
-        }
-      `}</style>
     </>
   );
 }

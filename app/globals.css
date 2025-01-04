@@ -46,7 +46,14 @@ body {
   font-family: var(--font-inter); /* Apply Lato globally */
 }
 
-@keyframes fadeIn {
+/* Base fade-in animation for empty state and initial table */
+.animate-slide-fade {
+  will-change: transform, opacity;
+  animation: slideFadeIn 0.3s ease-out;
+  animation-fill-mode: both;
+}
+
+@keyframes slideFadeIn {
   from {
     opacity: 0;
     transform: translateY(-10px);
@@ -57,7 +64,7 @@ body {
   }
 }
 
-@keyframes fadeOut {
+@keyframes slideFadeOut {
   from {
     opacity: 1;
     transform: translateY(0);
@@ -69,11 +76,14 @@ body {
 }
 
 .table-row-enter {
-  animation: fadeIn 0.3s ease-out;
+  will-change: transform, opacity;
+  animation: slideFadeIn 0.3s ease-out;
+  animation-fill-mode: both;
 }
 
 .table-row-exit {
-  animation: fadeOut 0.3s ease-out;
+  animation: slideFadeOut 0.3s ease-out;
+  animation-fill-mode: forwards;
 }
 
 /* New styles for Collapsible component */
@@ -87,9 +97,9 @@ body {
 }
 
 .collapsible-content-transition[data-state='open'] {
-  animation: fadeIn 0.3s ease-out;
+  animation: slideFadeIn 0.3s ease-out;
 }
 
 .collapsible-content-transition[data-state='closed'] {
-  animation: fadeOut 0.3s ease-out;
+  animation: slideFadeOut 0.3s ease-out;
 }

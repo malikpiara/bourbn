@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Table,
   TableBody,
@@ -60,7 +60,19 @@ export function ProductTable({ form }: ProductTableProps) {
     fieldArrayAppend(newEntry);
   };
 
-  const handleRemove = (index: number) => {
+  const handleRemove = async (index: number) => {
+    // First, apply exit animation class to the row
+    const rowElement = document.querySelector(
+      `[data-row-id="${fields[index].id}"]`
+    );
+    if (rowElement) {
+      rowElement.classList.add('table-row-exit');
+
+      // Wait for animation to complete
+      await new Promise((resolve) => setTimeout(resolve, 300));
+    }
+
+    // Then remove the row
     setItemToRemove(null);
     remove(index);
   };
@@ -79,34 +91,36 @@ export function ProductTable({ form }: ProductTableProps) {
 
   if (fields.length === 0) {
     return (
-      <Card className='w-full'>
-        <CardContent className='flex flex-col items-center justify-center p-6 text-center'>
-          <PackageOpen
-            strokeWidth={1.2}
-            color='#4B0021'
-            className='h-12 w-12 text-muted-foreground mb-4'
-          />
-          <h3 className='text-lg font-semibold mb-2'>
-            Ainda não foram adicionados produtos
-          </h3>
-          <p className='text-sm text-muted-foreground mb-4'>
-            Comece por adicionar o seu primeiro produto.
-          </p>
-          <Button
-            size={'lg'}
-            onClick={handleAppend}
-            className='flex items-center gap-2'
-          >
-            <PlusCircle className='h-6 w-6' />
-            Adicionar Produto
-          </Button>
-        </CardContent>
-      </Card>
+      <div>
+        <Card className='w-full'>
+          <CardContent className='flex flex-col items-center justify-center p-6 text-center'>
+            <PackageOpen
+              strokeWidth={1.2}
+              color='#4B0021'
+              className='h-12 w-12 text-muted-foreground mb-4'
+            />
+            <h3 className='text-lg font-semibold mb-2'>
+              Ainda não foram adicionados produtos
+            </h3>
+            <p className='text-sm text-muted-foreground mb-4'>
+              Comece por adicionar o seu primeiro produto.
+            </p>
+            <Button
+              size={'lg'}
+              onClick={handleAppend}
+              className='flex items-center gap-2'
+            >
+              <PlusCircle className='h-6 w-6' />
+              Adicionar Produto
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
     );
   }
 
   return (
-    <div className='space-y-4'>
+    <div className='space-y-4 table-row-enter'>
       <div className='overflow-x-auto'>
         <Table className='w-full'>
           <TableHeader>
@@ -130,7 +144,11 @@ export function ProductTable({ form }: ProductTableProps) {
           </TableHeader>
           <TableBody className="before:content-[''] before:block before:h-4">
             {fields.map((field, index) => (
-              <TableRow key={field.id} className='group'>
+              <TableRow
+                key={field.id}
+                data-row-id={field.id}
+                className='group table-row-enter'
+              >
                 <TableCell className='p-2'>
                   <Controller
                     name={`tableEntries.${index}.ref` as const}
@@ -304,7 +322,6 @@ export function ProductTable({ form }: ProductTableProps) {
           </TableBody>
         </Table>
       </div>
-
       <Button
         type='button'
         onClick={handleAppend}
