@@ -1,14 +1,14 @@
 import { Font, StyleSheet } from '@react-pdf/renderer';
 
 Font.register({
-  family: 'Geist',
+  family: 'Inter',
   fonts: [
     {
-      src: '/fonts/Geist-Regular.ttf',
+      src: '/fonts/Inter_18pt-Regular.ttf',
       fontWeight: 400, // normal
     },
     {
-      src: '/fonts/Geist-Medium.ttf',
+      src: '/fonts/Inter_18pt-SemiBold.ttf',
       fontWeight: 700, // bold
     },
   ],
@@ -17,14 +17,16 @@ Font.register({
 export const styles = StyleSheet.create({
   page: {
     padding: 30,
-    fontFamily: 'Geist',
+    fontFamily: 'Inter',
     fontSize: 10,
     lineHeight: 1.5,
+    backgroundColor: '#ffffff',
+    color: '#525252',
   },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
-    marginBottom: 30,
+    marginBottom: 25,
   },
   headerLeft: {
     flexDirection: 'column',
@@ -63,9 +65,9 @@ export const styles = StyleSheet.create({
   },
   tableHeader: {
     flexDirection: 'row',
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#f3f5f7',
     borderBottom: 1,
-    borderColor: '#000',
+    borderColor: '#262626',
     padding: 5,
     fontWeight: 700,
   },
@@ -168,7 +170,7 @@ export const styles = StyleSheet.create({
   transferDetails: {
     marginTop: '20px',
     padding: '10px',
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#f3f5f7',
     borderRadius: '3px',
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -190,7 +192,7 @@ export const styles = StyleSheet.create({
   deliveryAddressSection: {
     width: '200px',
     padding: '10px',
-    backgroundColor: '#f1f5f9',
+    backgroundColor: '#f3f5f7',
     borderRadius: '3px',
     flexDirection: 'column',
     justifyContent: 'space-between',
@@ -227,18 +229,18 @@ export const styles = StyleSheet.create({
   },
   signatureLine: {
     borderBottom: 1,
-    borderColor: '#000',
+    borderColor: '#262626',
     width: '100%', // Makes the line take full width of its container
     marginTop: 20,
   },
 
   paymentSection: {
-    marginTop: 30,
+    marginTop: 10,
     marginBottom: 30,
   },
   paymentTitle: {
     fontSize: 12,
-    marginBottom: 15,
+    marginBottom: 10,
     fontWeight: 700,
   },
   paymentTable: {
@@ -249,7 +251,7 @@ export const styles = StyleSheet.create({
   },
   paymentTableHeader: {
     flexDirection: 'row',
-    backgroundColor: '#f1f5f9', // Match other sections' background
+    backgroundColor: '#f3f5f7', // Match other sections' background
     borderBottomWidth: 1,
     borderBottomColor: '#e2e8f0',
   },

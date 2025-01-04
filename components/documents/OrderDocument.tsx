@@ -123,15 +123,24 @@ export const OrderDocument: React.FC<DocumentData> = ({
             </View>
           </View>
 
-          <View style={styles.moreDetailsNotes}>
-            {!customer.address.hasElevator && (
-              <>
-                <Text style={styles.deliveryAddressTitle}>Notas</Text>
-                {order.notes && <Text>{order.notes}</Text>}
-                <Text>Não há elevador</Text>
-              </>
-            )}
-          </View>
+          {(order.notes || !customer.address.hasElevator) && (
+            <View style={styles.moreDetailsNotes}>
+              <Text style={styles.deliveryAddressTitle}>Notas</Text>
+              {(() => {
+                let noteNumber = 0;
+                return (
+                  <>
+                    {!customer.address.hasElevator && (
+                      <Text>{`${++noteNumber}. Não há elevador no edifício`}</Text>
+                    )}
+                    {order.notes && (
+                      <Text>{`${++noteNumber}. ${order.notes}`}</Text>
+                    )}
+                  </>
+                );
+              })()}
+            </View>
+          )}
         </View>
 
         <View wrap={false}>
