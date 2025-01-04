@@ -84,9 +84,15 @@ export function ProductTable({ form }: ProductTableProps) {
 
   const totalPrice = fields.reduce((sum, field, index) => {
     const quantity = form.watch(`tableEntries.${index}.quantity`) || 0;
-    const price = form.watch(`tableEntries.${index}.unitPrice`) || 0;
-    const total = sum + quantity * price;
-    return total;
+    const rawUnitPrice = form.watch(`tableEntries.${index}.unitPrice`) || '0';
+
+    // Replace commas with dots and parse the value
+    const unitPrice = parseFloat(rawUnitPrice.toString().replace(',', '.'));
+
+    // If unitPrice is not a valid number, use 0 as a fallback
+    const price = isNaN(unitPrice) ? 0 : unitPrice;
+
+    return sum + quantity * price;
   }, 0);
 
   if (fields.length === 0) {
@@ -239,30 +245,39 @@ export function ProductTable({ form }: ProductTableProps) {
                       <div>
                         <Input
                           {...field}
-                          type='number'
-                          step='0.01'
+                          type='text'
                           placeholder='Preço'
+                          value={field.value || ''}
                           className='w-full'
-                          onChange={(e) =>
-                            field.onChange(parseFloat(e.target.value))
-                          }
-                          onFocus={(e) => {
-                            if (
-                              e.target.value === '0' ||
-                              e.target.value === '0.00'
-                            ) {
-                              e.target.value = '';
-                            }
+                          onChange={(e) => {
+                            const value = e.target.value;
+                            field.onChange(value);
                           }}
                           onBlur={(e) => {
-                            field.onBlur();
-                            if (e.target.value === '') {
-                              e.target.value = '0.00';
+                            // Get the current display value
+                            let displayValue = e.target.value;
+
+                            // Convert to number for storage and validation
+                            const rawValue = displayValue.replace(',', '.');
+                            const parsedValue = parseFloat(rawValue);
+
+                            if (!isNaN(parsedValue)) {
+                              // If the value is valid but doesn't include a comma and decimal places,
+                              // format it to show two decimal places
+                              if (!displayValue.includes(',')) {
+                                displayValue = parsedValue
+                                  .toFixed(2)
+                                  .replace('.', ',');
+                                e.target.value = displayValue;
+                              }
+                              // Store the numerical value for calculations
+                              field.onChange(parsedValue);
                             } else {
-                              e.target.value = parseFloat(
-                                e.target.value
-                              ).toFixed(2);
+                              // Handle invalid input
+                              e.target.value = '0,00';
+                              field.onChange(0);
                             }
+                            field.onBlur();
                           }}
                         />
                         {error && (
@@ -312,10 +327,11 @@ export function ProductTable({ form }: ProductTableProps) {
               </TableRow>
             ))}
             <TableRow className='font-semibold'>
-              <TableCell colSpan={2} className='text-right'>
+              <TableCell colSpan={1} className='text-right'>
                 Total:
               </TableCell>
-              <TableCell>{totalQuantity}</TableCell>
+              <TableCell className='text-left'>{totalQuantity}</TableCell>
+              <TableCell></TableCell>
               <TableCell>{formatCurrency(totalPrice)}</TableCell>
               <TableCell></TableCell>
             </TableRow>
