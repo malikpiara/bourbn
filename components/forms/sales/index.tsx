@@ -16,6 +16,7 @@ import { StoreSelection } from '../../form-sections/StoreSelection';
 import CustomerSection from './CustomerSection';
 import ProductSection from './ProductSection';
 import { OrderMetadata } from './OrderMetadata';
+import { fillFormWithTestData } from '@/lib/testData';
 
 // autoComplete='new-password' is a hack I put together to disable
 // the browser autofill.
@@ -125,6 +126,15 @@ export function SalesForm() {
     };
   }, [documentData]);
 
+  // Add this function to handle filling test data
+  const handleFillTestData = useCallback(() => {
+    fillFormWithTestData(form);
+    // If we're on step 1, move to step 2 since test data includes store selection
+    if (step === 1) {
+      setStep(2);
+    }
+  }, [form, step]);
+
   return (
     <BlobProvider
       document={<OrderDocument {...(documentData || mockData)} />}
@@ -137,6 +147,17 @@ export function SalesForm() {
             autoComplete='off'
             className='space-y-8'
           >
+            {/* Development-only test data button */}
+            {process.env.NODE_ENV === 'development' && (
+              <Button
+                type='button'
+                onClick={handleFillTestData}
+                variant='outline'
+                className='mb-4'
+              >
+                Fill Test Data
+              </Button>
+            )}
             {step === 1 ? (
               <StoreSelection form={form} onStoreSelect={handleStoreSelect} />
             ) : (
