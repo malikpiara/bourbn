@@ -7,7 +7,25 @@ export const tableEntrySchema = z.object({
     .string()
     .min(5, 'O nome do produto deve ter pelo menos 5 caracteres.'),
   quantity: z.number().min(1, 'A quantidade deve ser pelo menos 1.'),
-  unitPrice: z.number().min(0, 'O preço não pode ser negativo.'),
+  unitPrice: z
+    .union([
+      // Handle string inputs (like "21,23")
+      z.string().transform((str) => {
+        // If empty string, return 0
+        if (!str) return 0;
+        // Remove any non-numeric chars except comma and dot
+        // Then replace comma with dot for parsing
+        return parseFloat(str.replace(',', '.'));
+      }),
+      // Also accept regular numbers
+      z.number(),
+    ])
+    // After union, ensure final value is a valid number
+    .pipe(
+      z.number().min(0, 'O preço não pode ser negativo.')
+      // Optionally add max if needed
+      // .max(999999999, 'Preço máximo excedido')
+    ),
 });
 
 export const formSchema = z.object({

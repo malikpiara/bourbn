@@ -245,31 +245,27 @@ export function ProductTable({ form }: ProductTableProps) {
                       <div>
                         <Input
                           {...field}
-                          type='text' // Allows for commas and raw input
+                          type='text'
                           placeholder='Preço'
-                          value={field.value || ''} // Keep input blank if no value
+                          value={field.value || ''}
                           className='w-full'
                           onChange={(e) => {
-                            const value = e.target.value;
-                            field.onChange(value); // Allow raw input
+                            // Store the raw input - schema will handle conversion
+                            field.onChange(e.target.value);
                           }}
                           onBlur={(e) => {
-                            const rawValue = e.target.value.replace(',', '.');
-                            const parsedValue = parseFloat(rawValue);
-
-                            if (!isNaN(parsedValue)) {
-                              e.target.value = parsedValue.toFixed(2); // Format to 2 decimal places
-                              field.onChange(parsedValue);
-                            } else {
-                              e.target.value = '';
-                              field.onChange(0);
+                            const value = e.target.value;
+                            if (!value) {
+                              e.target.value = '0,00';
+                              field.onChange('0,00');
                             }
                             field.onBlur();
                           }}
+                          // Maintaining the keyboard Enter functionality
                           onKeyDown={(e) => {
                             if (e.key === 'Enter') {
                               e.preventDefault(); // Prevent default form submission behavior
-                              (e.target as HTMLInputElement).blur(); // Blur the input on Enter key
+                              (e.target as HTMLInputElement).blur(); // Cast target as HTMLInputElement and blur
                             }
                           }}
                         />
