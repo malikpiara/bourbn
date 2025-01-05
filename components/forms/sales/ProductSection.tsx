@@ -1,5 +1,5 @@
 import { UseFormReturn } from 'react-hook-form';
-import { ProductTable } from '@/components/forms/sales/ProductTable';
+import { ProductTable } from '@/components/forms/sales/ProductTable/ProductTable';
 import {
   FormField,
   FormItem,
