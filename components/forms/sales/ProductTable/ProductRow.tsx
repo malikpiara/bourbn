@@ -22,6 +22,8 @@ import {
   AlertDialogTitle,
   AlertDialogTrigger,
 } from '@/components/ui/alert-dialog';
+import { capitalizeWithPreserve } from '@/utils/format/capitalise';
+import { cleanSpaces } from '@/utils/format';
 
 // We define the expected shape of our props
 interface ProductRowProps {
@@ -61,6 +63,12 @@ export default function ProductRow({
               {...inputField}
               placeholder='Referência'
               error={error?.message}
+              onBlur={(e) => {
+                const cleanValue = cleanSpaces(e.target.value);
+                const formattedValue = capitalizeWithPreserve(cleanValue);
+                inputField.onChange(formattedValue);
+                inputField.onBlur();
+              }}
             />
           )}
         />
@@ -111,6 +119,12 @@ export default function ProductRow({
               {...inputField}
               placeholder='Designação'
               error={error?.message}
+              onBlur={(e) => {
+                const cleanValue = cleanSpaces(e.target.value);
+                const formattedValue = capitalizeWithPreserve(cleanValue);
+                inputField.onChange(formattedValue);
+                inputField.onBlur();
+              }}
             />
           )}
         />

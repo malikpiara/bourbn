@@ -17,6 +17,7 @@ import {
 import { Checkbox } from '@/components/ui/checkbox';
 import { FormValues } from '@/lib/schema';
 import { useEnterKeyBlur } from '@/hooks/useEnterKeyBlur';
+import { capitalizeWithPreserve, cleanSpaces } from '@/utils/format';
 
 interface CustomerSectionProps {
   form: UseFormReturn<FormValues>;
@@ -55,6 +56,12 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
                 autoComplete='false'
                 {...field}
                 onKeyDown={handleEnterKey}
+                onBlur={(e) => {
+                  const cleanValue = cleanSpaces(e.target.value);
+                  const formattedValue = capitalizeWithPreserve(cleanValue);
+                  field.onChange(formattedValue);
+                  field.onBlur();
+                }}
               />
             </FormControl>
             <FormDescription>
@@ -104,6 +111,11 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
                 autoComplete='new-password'
                 {...field}
                 onKeyDown={handleEnterKey}
+                onBlur={(e) => {
+                  const cleanValue = cleanSpaces(e.target.value);
+                  field.onChange(cleanValue);
+                  field.onBlur();
+                }}
               />
             </FormControl>
             <FormDescription>
@@ -146,6 +158,12 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
                 autoComplete='new-password'
                 {...field}
                 onKeyDown={handleEnterKey}
+                onBlur={(e) => {
+                  const cleanValue = cleanSpaces(e.target.value);
+                  const formattedValue = capitalizeWithPreserve(cleanValue);
+                  field.onChange(formattedValue);
+                  field.onBlur();
+                }}
               />
             </FormControl>
             <FormDescription>Nome e número da rua</FormDescription>
@@ -166,6 +184,11 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
                 autoComplete='new-password'
                 {...field}
                 onKeyDown={handleEnterKey}
+                onBlur={(e) => {
+                  const cleanValue = cleanSpaces(e.target.value);
+                  field.onChange(cleanValue);
+                  field.onBlur();
+                }}
               />
             </FormControl>
             <FormDescription>
@@ -213,6 +236,11 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
                 autoComplete='new-password'
                 {...field}
                 onKeyDown={handleEnterKey}
+                onBlur={(e) => {
+                  const formattedValue = capitalizeWithPreserve(e.target.value);
+                  field.onChange(formattedValue);
+                  field.onBlur();
+                }}
               />
             </FormControl>
             <FormMessage />
