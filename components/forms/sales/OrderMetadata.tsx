@@ -25,6 +25,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from '@/components/ui/popover';
+import { useEnterKeyBlur } from '@/hooks/useEnterKeyBlur';
 
 interface OrderMetadataProps {
   form: UseFormReturn<FormValues>;
@@ -37,6 +38,7 @@ export function OrderMetadata({
   isOpen,
   onOpenChange,
 }: OrderMetadataProps) {
+  const handleEnterKey = useEnterKeyBlur();
   return (
     <>
       <Collapsible
@@ -65,7 +67,12 @@ export function OrderMetadata({
               <FormItem>
                 <FormLabel>Número da Encomenda</FormLabel>
                 <FormControl>
-                  <Input placeholder='6111' autoComplete='false' {...field} />
+                  <Input
+                    placeholder='6111'
+                    autoComplete='false'
+                    {...field}
+                    onKeyDown={handleEnterKey}
+                  />
                 </FormControl>
                 <FormDescription>
                   O número da encomenda é gerado automaticamente.

@@ -16,6 +16,7 @@ import {
 } from '@/components/ui/input-otp';
 import { Checkbox } from '@/components/ui/checkbox';
 import { FormValues } from '@/lib/schema';
+import { useEnterKeyBlur } from '@/hooks/useEnterKeyBlur';
 
 interface CustomerSectionProps {
   form: UseFormReturn<FormValues>;
@@ -35,6 +36,8 @@ const handleOTPKeyDown = (event: React.KeyboardEvent) => {
 };
 
 function CustomerSection({ form, className }: CustomerSectionProps) {
+  // Create a single instance of the handler for all inputs
+  const handleEnterKey = useEnterKeyBlur();
   return (
     <div className={`space-y-8 ${className || ''}`}>
       <h2 className='scroll-m-20 border-b pb-2 text-3xl font-semibold tracking-tight first:mt-0"'>
@@ -48,7 +51,11 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
           <FormItem>
             <FormLabel>Nome</FormLabel>
             <FormControl>
-              <Input autoComplete='false' {...field} />
+              <Input
+                autoComplete='false'
+                {...field}
+                onKeyDown={handleEnterKey}
+              />
             </FormControl>
             <FormDescription>
               Escreve o primeiro e último nome, ou o nome da empresa.
@@ -69,6 +76,7 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
                 type='email'
                 autoComplete='new-password'
                 {...field}
+                onKeyDown={handleEnterKey}
                 value={field.value || ''} // Handle undefined/null values
                 onChange={(e) => {
                   const value = e.target.value;
@@ -91,7 +99,12 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
           <FormItem>
             <FormLabel>Telefone do cliente</FormLabel>
             <FormControl>
-              <Input type='tel' autoComplete='new-password' {...field} />
+              <Input
+                type='tel'
+                autoComplete='new-password'
+                {...field}
+                onKeyDown={handleEnterKey}
+              />
             </FormControl>
             <FormDescription>
               Pode ser usado para auxiliar a entrega.
@@ -132,6 +145,7 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
                 placeholder='Rua do Carmo 12'
                 autoComplete='new-password'
                 {...field}
+                onKeyDown={handleEnterKey}
               />
             </FormControl>
             <FormDescription>Nome e número da rua</FormDescription>
@@ -151,6 +165,7 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
                 placeholder='Lote B, 3dto'
                 autoComplete='new-password'
                 {...field}
+                onKeyDown={handleEnterKey}
               />
             </FormControl>
             <FormDescription>
@@ -194,7 +209,11 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
           <FormItem>
             <FormLabel>Cidade</FormLabel>
             <FormControl>
-              <Input autoComplete='new-password' {...field} />
+              <Input
+                autoComplete='new-password'
+                {...field}
+                onKeyDown={handleEnterKey}
+              />
             </FormControl>
             <FormMessage />
           </FormItem>
