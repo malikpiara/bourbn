@@ -68,9 +68,15 @@ export const formSchema = z.object({
       }
     ),
   nif: z
-    .string()
-    .length(9, { message: 'O número de contribuinte tem 9 caracteres.' })
-    .regex(/^\d+$/, { message: 'Apenas números são permitidos.' }),
+    .union([
+      z
+        .string()
+        .length(9, { message: 'O número de contribuinte tem 9 caracteres.' })
+        .regex(/^\d+$/, { message: 'Apenas números são permitidos.' }),
+      z.string().length(0), // Allow empty string
+    ])
+    .optional(),
+
   address1: z.string().min(5, {
     message: 'A morada deve ter pelo menos 5 caracteres.',
   }),
