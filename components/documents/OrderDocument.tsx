@@ -30,13 +30,23 @@ export const OrderDocument: React.FC<DocumentData> = ({
         </View>
 
         {/* Invoice Details */}
-
         <View style={styles.invoiceDetails}>
           <View style={styles.customerInfo}>
             <Text>Sr.(a) {customer.name}</Text>
-            <Text>{`${customer.address.address1}, ${customer.address.address2}`}</Text>
-            <Text>{customer.address.postalCode}</Text>
-            <Text>{customer.address.city}</Text>
+            {/* Use billing address if it exists, otherwise use delivery address */}
+            {customer.billingAddress ? (
+              <>
+                <Text>{`${customer.billingAddress.address1}, ${customer.billingAddress.address2}`}</Text>
+                <Text>{customer.billingAddress.postalCode}</Text>
+                <Text>{customer.billingAddress.city}</Text>
+              </>
+            ) : (
+              <>
+                <Text>{`${customer.address.address1}, ${customer.address.address2}`}</Text>
+                <Text>{customer.address.postalCode}</Text>
+                <Text>{customer.address.city}</Text>
+              </>
+            )}
           </View>
 
           {customer.nif && customer.nif !== '000 000 000' && (

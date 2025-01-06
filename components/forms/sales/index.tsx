@@ -46,6 +46,11 @@ export function SalesForm() {
       storeId: '',
       elevator: false,
       notes: '',
+      sameAddress: true,
+      billingAddress1: '',
+      billingAddress2: '',
+      billingPostalCode: '',
+      billingCity: '',
     },
   });
 

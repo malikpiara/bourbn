@@ -25,6 +25,11 @@ export const testFormValues: FormValues = {
     .padStart(7, '0'),
   city: mockData.customer.address.city,
   elevator: mockData.customer.address.hasElevator,
+  sameAddress: true,
+  billingAddress1: '', // Ensure defaults exist for billing fields
+  billingAddress2: '',
+  billingPostalCode: '',
+  billingCity: '',
   tableEntries: mockData.order.items.map((item, index) => ({
     id: index + 1,
     ref: item.ref,
@@ -36,13 +41,8 @@ export const testFormValues: FormValues = {
 
 // Helper function to fill form with test data
 export const fillFormWithTestData = (form: UseFormReturn<FormValues>) => {
-  form.reset();
-
-  Object.entries(testFormValues).forEach(([key, value]) => {
-    form.setValue(key as keyof FormValues, value, {
-      shouldValidate: true,
-      shouldDirty: true,
-      shouldTouch: true,
-    });
+  form.reset(testFormValues, {
+    keepDirty: false, // Ensure values are fully replaced
+    keepValues: false, // Clear any prior values
   });
 };

@@ -1,9 +1,10 @@
 import { FormValues } from '@/lib/schema';
-import { DocumentData } from '@/types/document';
+import { Customer, DocumentData } from '@/types/document';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
 import { COMPANY_INFO, VAT_RATE, DATE_FORMAT } from '@/lib/constants';
 import { formatNIF, formatPostalCode } from './form';
+import { formatPhoneNumber } from 'react-phone-number-input';
 
 export const formatOrderData = (values: FormValues): DocumentData => {
   try {
@@ -32,21 +33,41 @@ export const formatOrderData = (values: FormValues): DocumentData => {
       throw new Error('Erro ao calcular o total da encomenda.');
     }
 
-    return {
-      company: COMPANY_INFO, // From constants
-      customer: {
-        name: values.name,
-        email: values.email,
-        phone: values.phoneNumber,
-        nif: formatNIF(values.nif),
-        address: {
-          address1: values.address1,
-          address2: values.address2 || '',
-          postalCode: formatPostalCode(values.postalCode),
-          city: values.city,
-          hasElevator: values.elevator || false,
-        },
+    const customerData: Customer = {
+      name: values.name,
+      email: values.email || undefined,
+      // Convert empty string to null for phone
+      phone: formatPhoneNumber(values.phoneNumber) || null,
+      // Format NIF if exists
+      nif: values.nif ? formatNIF(values.nif) : undefined,
+      address: {
+        address1: values.address1,
+        address2: values.address2 || '',
+        postalCode: formatPostalCode(values.postalCode),
+        city: values.city,
+        hasElevator: values.elevator || false,
       },
+    };
+
+    // Add billing address if sameAddress is false and all required fields exist
+    if (
+      !values.sameAddress &&
+      values.billingAddress1 &&
+      values.billingPostalCode &&
+      values.billingCity
+    ) {
+      customerData.billingAddress = {
+        address1: values.billingAddress1,
+        address2: values.billingAddress2 || '',
+        postalCode: formatPostalCode(values.billingPostalCode),
+        city: values.billingCity,
+        hasElevator: false,
+      };
+    }
+
+    return {
+      company: COMPANY_INFO,
+      customer: customerData,
       order: {
         id: values.orderNumber.toString(),
         storeId: `OCT ${values.storeId}`,
@@ -54,7 +75,7 @@ export const formatOrderData = (values: FormValues): DocumentData => {
         items: orderItems,
         vat: VAT_RATE,
         totalAmount,
-        notes: values.notes!,
+        notes: values.notes || undefined,
       },
     };
   } catch (error) {
