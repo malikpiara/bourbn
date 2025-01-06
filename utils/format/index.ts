@@ -4,3 +4,4 @@ export * from './orderData';
 export * from './number';
 export * from './capitalise';
 export * from './trim';
+export * from './phoneNumber';

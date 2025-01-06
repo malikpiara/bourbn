@@ -1,3 +1,4 @@
+import { isPossiblePhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 
 export const tableEntrySchema = z.object({
@@ -52,8 +53,20 @@ export const formSchema = z.object({
     .optional(), // Make the whole field optional
   phoneNumber: z
     .string()
-    .length(9, { message: 'O número deve ter 9 caracteres.' })
-    .regex(/^\d+$/, { message: 'Apenas números são permitidos.' }),
+    .min(1, 'O número de telefone é obrigatório')
+    .refine(
+      (val) => {
+        try {
+          return isPossiblePhoneNumber(val);
+          // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        } catch (error) {
+          return false;
+        }
+      },
+      {
+        message: 'Número de telefone inválido',
+      }
+    ),
   nif: z
     .string()
     .length(9, { message: 'O número de contribuinte tem 9 caracteres.' })

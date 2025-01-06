@@ -17,7 +17,7 @@ export interface Customer {
   name: string;
   nif?: string;
   email?: string;
-  phone: string;
+  phone: string | null; // Using string | null since react-phone-number-input uses this type (E.164)
   address: Address;
 }
 

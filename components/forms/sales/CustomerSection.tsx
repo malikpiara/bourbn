@@ -18,6 +18,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { FormValues } from '@/lib/schema';
 import { useEnterKeyBlur } from '@/hooks/useEnterKeyBlur';
 import { capitalizeWithPreserve, cleanSpaces } from '@/utils/format';
+import { PhoneInput } from '@/components/ui/phone-input';
 
 interface CustomerSectionProps {
   form: UseFormReturn<FormValues>;
@@ -99,6 +100,7 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
           </FormItem>
         )}
       />
+
       <FormField
         control={form.control}
         name='phoneNumber'
@@ -106,16 +108,33 @@ function CustomerSection({ form, className }: CustomerSectionProps) {
           <FormItem>
             <FormLabel>Telefone do cliente</FormLabel>
             <FormControl>
-              <Input
+              <PhoneInput
                 type='tel'
                 autoComplete='new-password'
+                defaultCountry='PT'
+                countries={[
+                  'PT', // Portugal
+                  'ES', // Spain
+                  'FR', // France
+                  'DE', // Germany
+                  'IT', // Italy
+                  'MZ', // Mozambique
+                  'AO', // Angola
+                  'BR', // Brazil
+                  'CV', // Cape Verde
+                  'GB', // United Kingdom
+                  'NL', // Netherlands
+                  'BE', // Belgium
+                  'GW', // Guinea-Bissau
+                  'ST', // São Tomé and Príncipe
+                  'US', // United States
+                  'CH', // Switzerland
+                  'SE', // Sweden
+                  'DK', // Denmark
+                  'NO', // Norway
+                ]}
                 {...field}
                 onKeyDown={handleEnterKey}
-                onBlur={(e) => {
-                  const cleanValue = cleanSpaces(e.target.value);
-                  field.onChange(cleanValue);
-                  field.onBlur();
-                }}
               />
             </FormControl>
             <FormDescription>

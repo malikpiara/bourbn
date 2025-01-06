@@ -10,10 +10,9 @@ export const testFormValues: FormValues = {
   orderNumber: parseInt(mockData.order.id),
   date: new Date(),
   email: mockData.customer.email,
-  phoneNumber: mockData.customer.phone
-    .replace(/\D/g, '')
-    .slice(0, 9)
-    .padStart(9, '0'),
+  phoneNumber: mockData.customer.phone?.startsWith('+')
+    ? mockData.customer.phone
+    : `+${mockData.customer.phone}`,
   nif: (mockData.customer.nif || '000000000')
     .replace(/\D/g, '')
     .slice(0, 9)

@@ -10,7 +10,7 @@ export const mockData: DocumentData = {
   customer: {
     name: 'Malik Piara',
     email: 'malik@hey.com',
-    phone: '962119084',
+    phone: '+351962119084',
     nif: '000 000 000',
     address: {
       address1: 'Largo Monsenhor Dalgado 12',
