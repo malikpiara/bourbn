@@ -23,6 +23,7 @@ export const mockData: DocumentData = {
   order: {
     storeId: 'OCT 1',
     date: '17 de Dezembro de 2024',
+    salesType: 'delivery',
     id: '17308',
     items: [
       {
