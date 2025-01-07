@@ -34,9 +34,14 @@ const sharedFields = {
   }),
   email: z.string().email('Email inválido').optional(),
   nif: z
-    .string()
-    .length(9, 'O número de contribuinte tem 9 caracteres.')
-    .regex(/^\d+$/, 'Apenas números são permitidos.')
+    .union([
+      // Doing an union so we don't throw an error message if users click accidently there.
+      z
+        .string()
+        .length(9, { message: 'O número de contribuinte tem 9 caracteres.' })
+        .regex(/^\d+$/, { message: 'Apenas números são permitidos.' }),
+      z.string().length(0), // If length is 0, don't throw a message.
+    ])
     .optional(),
   notes: z.string().optional(), // Notes are shared across both sales types
 };

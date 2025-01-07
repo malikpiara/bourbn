@@ -10,7 +10,7 @@ import { DEFAULT_ORDER_NUMBER } from '@/lib/constants';
 import { downloadPdf } from '@/utils/form';
 import { formatOrderData } from '@/utils/format';
 import { StoreSelection } from './StoreSelection';
-import CustomerSection from './CustomerSection';
+import { CustomerSection } from './CustomerSection';
 import ProductSection from './ProductSection';
 import { OrderMetadata } from './OrderMetadata';
 import { fillFormWithTestData } from '@/lib/mocks/testData';
@@ -188,14 +188,9 @@ export function SalesForm() {
                 onOpenChange={setIsCollapsibleOpen}
               />
 
-              {selectedSalesType === 'delivery' && (
-                <>
-                  <ProductSection form={form} />
-                  <CustomerSection form={form} />
-                </>
-              )}
+              <ProductSection form={form} />
 
-              {selectedSalesType === 'direct' && <div>{/* TODO */}</div>}
+              <CustomerSection form={form} />
 
               <Button
                 type='submit'
