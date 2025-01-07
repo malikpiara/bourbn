@@ -6,6 +6,7 @@ import { UseFormReturn } from 'react-hook-form';
 export const testFormValues: FormValues = {
   name: mockData.customer.name,
   storeId: mockData.order.storeId.replace('OCT ', ''),
+  salesType: 'delivery',
   notes: '',
   orderNumber: parseInt(mockData.order.id),
   date: new Date(),

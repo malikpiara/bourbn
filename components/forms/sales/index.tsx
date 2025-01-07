@@ -38,7 +38,7 @@ export function SalesForm() {
     mode: 'onBlur',
     defaultValues: {
       storeId: '',
-      salesType: null,
+      salesType: undefined,
       name: '',
       orderNumber: DEFAULT_ORDER_NUMBER,
       date: new Date(),
@@ -199,7 +199,18 @@ export function SalesForm() {
 
               <Button
                 type='submit'
-                disabled={!form.formState.isValid}
+                disabled={
+                  !form.formState.isValid || // Default form validation
+                  (selectedSalesType === 'delivery' &&
+                    !form.getValues('sameAddress') && // If `sameAddress` is false
+                    (!form.getValues('billingAddress1') ||
+                      (form.getValues('billingAddress1')?.length || 0) < 5 || // Ensure safe length check
+                      !form.getValues('billingPostalCode') ||
+                      (form.getValues('billingPostalCode')?.length || 0) !==
+                        7 || // Ensure safe length check
+                      !form.getValues('billingCity') ||
+                      (form.getValues('billingCity')?.length || 0) < 5)) // Ensure safe length check
+                }
                 className='w-full'
               >
                 Pré-visualizar Documento
