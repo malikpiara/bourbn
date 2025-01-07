@@ -115,6 +115,27 @@ export function CustomerSection({ form, className }: CustomerSectionProps) {
                 type='tel'
                 autoComplete='new-password'
                 defaultCountry='PT'
+                countries={[
+                  'PT', // Portugal
+                  'ES', // Spain
+                  'FR', // France
+                  'DE', // Germany
+                  'IT', // Italy
+                  'MZ', // Mozambique
+                  'AO', // Angola
+                  'BR', // Brazil
+                  'CV', // Cape Verde
+                  'GB', // United Kingdom
+                  'NL', // Netherlands
+                  'BE', // Belgium
+                  'GW', // Guinea-Bissau
+                  'ST', // São Tomé and Príncipe
+                  'US', // United States
+                  'CH', // Switzerland
+                  'SE', // Sweden
+                  'DK', // Denmark
+                  'NO', // Norway
+                ]}
                 {...field}
                 onKeyDown={handleEnterKey}
               />

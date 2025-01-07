@@ -10,7 +10,7 @@ export const testFormValues: FormValues = {
   notes: '',
   orderNumber: parseInt(mockData.order.id),
   date: new Date(),
-  email: mockData.customer.email,
+  email: mockData.customer.email || '',
   phoneNumber: mockData.customer.phone?.startsWith('+')
     ? mockData.customer.phone
     : `+${mockData.customer.phone}`,

@@ -32,7 +32,6 @@ const sharedFields = {
   date: z.date().refine((d) => !isNaN(d.getTime()), {
     message: 'Data inválida.',
   }),
-  email: z.string().email('Email inválido').optional(),
   nif: z
     .union([
       // Doing an union so we don't throw an error message if users click accidently there.
@@ -58,6 +57,13 @@ const billingAddressFields = {
 const directSalesSchema = z.object({
   ...sharedFields,
   salesType: z.literal('direct'),
+  email: z
+    .union([
+      z.string().email('Email inválido'),
+      z.literal(''), // Allow empty strings explicitly
+      z.null(), // Allow null values
+    ])
+    .optional(), // Allow undefined values
   phoneNumber: z
     .string()
     .optional()
@@ -71,6 +77,7 @@ const directSalesSchema = z.object({
 const deliverySchema = z.object({
   ...sharedFields,
   salesType: z.literal('delivery'),
+  email: z.string().email('Email inválido').min(1, 'Email é obrigatório'), // Required for delivery
   phoneNumber: z
     .string()
     .min(1, 'O número de telefone é obrigatório')
