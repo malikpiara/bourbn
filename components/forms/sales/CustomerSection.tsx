@@ -305,7 +305,17 @@ export function CustomerSection({ form, className }: CustomerSectionProps) {
               <FormControl>
                 <Checkbox
                   checked={field.value}
-                  onCheckedChange={field.onChange}
+                  onCheckedChange={(checked) => {
+                    field.onChange(checked);
+
+                    if (checked) {
+                      // Clear billing fields when "sameAddress" is checked
+                      form.setValue('billingAddress1', '');
+                      form.setValue('billingAddress2', '');
+                      form.setValue('billingPostalCode', '');
+                      form.setValue('billingCity', '');
+                    }
+                  }}
                 />
               </FormControl>
               <div className='space-y-1 leading-none'>
@@ -377,12 +387,32 @@ export function CustomerSection({ form, className }: CustomerSectionProps) {
                 <FormItem>
                   <FormLabel>Código Postal</FormLabel>
                   <FormControl>
-                    <Input
+                    <InputOTP
+                      maxLength={7}
                       {...field}
-                      placeholder='0000-000'
-                      autoComplete='new-password'
-                      onKeyDown={handleEnterKey}
-                    />
+                      onKeyDown={handleOTPKeyDown}
+                      onBlur={(e) => {
+                        const postalCode = e.target.value.replace(/\s/g, '');
+                        field.onChange(postalCode);
+                        const city = getCityFromPostalCode(postalCode);
+                        if (city) {
+                          form.setValue('billingCity', city);
+                        }
+                        field.onBlur();
+                      }}
+                    >
+                      <InputOTPGroup>
+                        {[...Array(4)].map((_, index) => (
+                          <InputOTPSlot key={index} index={index} />
+                        ))}
+                      </InputOTPGroup>
+                      <InputOTPSeparator />
+                      <InputOTPGroup>
+                        {[...Array(3)].map((_, index) => (
+                          <InputOTPSlot key={index + 4} index={index + 4} />
+                        ))}
+                      </InputOTPGroup>
+                    </InputOTP>
                   </FormControl>
                   <FormMessage />
                 </FormItem>

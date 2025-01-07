@@ -23,16 +23,11 @@ type FormStep = 'store' | 'salesType' | 'details' | 'preview';
 
 export function SalesForm() {
   const [currentStep, setCurrentStep] = useState<FormStep>('store');
-  const [selectedSalesType, setSelectedSalesType] = useState<
-    'direct' | 'delivery' | null
-  >(null);
-
   const [isGenerating, setIsGenerating] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
   const [documentData, setDocumentData] = useState<DocumentData | null>(null);
   const [isCollapsibleOpen, setIsCollapsibleOpen] = useState(false);
 
-  // Initialize the form with default values
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     mode: 'onBlur',
@@ -60,35 +55,25 @@ export function SalesForm() {
     },
   });
 
-  // Handle store selection logic
   const handleStoreSelect = (storeId: string) => {
     const selectedStore = stores.find((store) => store.id === storeId);
     form.setValue('storeId', storeId);
 
     if (selectedStore?.salesTypes.length === 1) {
-      // Automatically select the only available sales type
-      const singleSalesType = selectedStore.salesTypes[0] as
-        | 'direct'
-        | 'delivery';
-      setSelectedSalesType(singleSalesType);
-      form.setValue('salesType', singleSalesType);
+      form.setValue('salesType', selectedStore.salesTypes[0]);
       setCurrentStep('details');
     } else {
-      setCurrentStep('salesType'); // Proceed to sales type selection step
+      setCurrentStep('salesType');
     }
   };
 
-  // Handle sales type selection logic
   const handleSalesTypeSelect = (type: 'direct' | 'delivery') => {
-    setSelectedSalesType(type);
     form.setValue('salesType', type);
-    setCurrentStep('details'); // Proceed to details step
+    setCurrentStep('details');
   };
 
-  // New function to handle preview generation
   const handlePreviewGeneration = useCallback(async (values: FormValues) => {
     try {
-      // Validate form data
       const result = formSchema.safeParse(values);
       if (!result.success) {
         console.error('Validation Errors:', result.error.errors);
@@ -96,7 +81,6 @@ export function SalesForm() {
         return;
       }
 
-      // Transform form data
       const formattedData = formatOrderData(values);
       setDocumentData(formattedData);
       setCurrentStep('preview');
@@ -110,7 +94,6 @@ export function SalesForm() {
     }
   }, []);
 
-  // Modified submit handler for the final download
   const handleDownload = useCallback(
     async (url: string | null) => {
       if (!url || !documentData) return;
@@ -120,7 +103,6 @@ export function SalesForm() {
 
       try {
         await downloadPdf(url, documentData.order.id);
-        console.log('PDF downloaded successfully');
       } catch (error) {
         console.error('Error downloading PDF:', error);
         setPdfError(
@@ -135,14 +117,12 @@ export function SalesForm() {
     [documentData]
   );
 
-  // Function to go back to form editing
   const handleBackToForm = useCallback(() => {
     setCurrentStep('details');
     setDocumentData(null);
     setPdfError(null);
   }, []);
 
-  // Test data handler
   const handleFillTestData = useCallback(() => {
     fillFormWithTestData(form);
     setCurrentStep('details');
@@ -151,7 +131,6 @@ export function SalesForm() {
   return (
     <FormProvider {...form}>
       <div className='space-y-8'>
-        {/* Development-only test data button */}
         {process.env.NODE_ENV === 'development' && (
           <Button
             type='button'
@@ -163,14 +142,13 @@ export function SalesForm() {
           </Button>
         )}
 
-        {/* Render the appropriate step */}
         {currentStep === 'store' && (
           <StoreSelection form={form} onStoreSelect={handleStoreSelect} />
         )}
 
         {currentStep === 'salesType' && (
           <SalesTypeSelection
-            form={form} // Pass the form object from useForm
+            form={form}
             onSalesTypeSelect={handleSalesTypeSelect}
             salesTypes={['direct', 'delivery']}
           />
@@ -195,16 +173,12 @@ export function SalesForm() {
               <Button
                 type='submit'
                 disabled={
-                  !form.formState.isValid || // Default form validation
-                  (selectedSalesType === 'delivery' &&
-                    !form.getValues('sameAddress') && // If `sameAddress` is false
-                    (!form.getValues('billingAddress1') ||
-                      (form.getValues('billingAddress1')?.length || 0) < 5 || // Ensure safe length check
-                      !form.getValues('billingPostalCode') ||
-                      (form.getValues('billingPostalCode')?.length || 0) !==
-                        7 || // Ensure safe length check
-                      !form.getValues('billingCity') ||
-                      (form.getValues('billingCity')?.length || 0) < 5)) // Ensure safe length check
+                  !form.formState.isValid ||
+                  (form.watch('salesType') === 'delivery' &&
+                    !form.watch('sameAddress') &&
+                    (!form.watch('billingAddress1') ||
+                      !form.watch('billingPostalCode') ||
+                      !form.watch('billingCity')))
                 }
                 className='w-full'
               >

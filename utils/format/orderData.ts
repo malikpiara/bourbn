@@ -36,33 +36,43 @@ export const formatOrderData = (values: FormValues): DocumentData => {
     const customerData: Customer = {
       name: values.name,
       email: values.email || undefined,
-      // Convert empty string to null for phone
-      phone: formatPhoneNumber(values.phoneNumber) || null,
-      // Format NIF if exists
+      // Convert empty string or undefined to null for phone
+      phone: values.phoneNumber
+        ? formatPhoneNumber(values.phoneNumber) || null
+        : null,
       nif: values.nif ? formatNIF(values.nif) : undefined,
       address: {
+        address1: '',
+        address2: '',
+        postalCode: '',
+        city: '',
+        hasElevator: false,
+      },
+    };
+
+    if (values.salesType === 'delivery') {
+      customerData.address = {
         address1: values.address1,
         address2: values.address2 || '',
         postalCode: formatPostalCode(values.postalCode),
         city: values.city,
         hasElevator: values.elevator || false,
-      },
-    };
-
-    // Add billing address if sameAddress is false and all required fields exist
-    if (
-      !values.sameAddress &&
-      values.billingAddress1 &&
-      values.billingPostalCode &&
-      values.billingCity
-    ) {
-      customerData.billingAddress = {
-        address1: values.billingAddress1,
-        address2: values.billingAddress2 || '',
-        postalCode: formatPostalCode(values.billingPostalCode),
-        city: values.billingCity,
-        hasElevator: false,
       };
+
+      if (
+        !values.sameAddress &&
+        values.billingAddress1 &&
+        values.billingPostalCode &&
+        values.billingCity
+      ) {
+        customerData.billingAddress = {
+          address1: values.billingAddress1,
+          address2: values.billingAddress2 || '',
+          postalCode: formatPostalCode(values.billingPostalCode),
+          city: values.billingCity,
+          hasElevator: false,
+        };
+      }
     }
 
     return {
@@ -71,6 +81,7 @@ export const formatOrderData = (values: FormValues): DocumentData => {
       order: {
         id: values.orderNumber.toString(),
         storeId: `OCT ${values.storeId}`,
+        salesType: values.salesType, // Include salesType
         date: format(values.date, DATE_FORMAT, { locale: pt }),
         items: orderItems,
         vat: VAT_RATE,
