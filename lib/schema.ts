@@ -21,6 +21,7 @@ export const tableEntrySchema = z.object({
 
 export const formSchema = z
   .object({
+    salesType: z.enum(['direct', 'delivery']).nullable().optional(),
     tableEntries: z.array(tableEntrySchema),
     name: z.string().min(2, {
       message: 'O nome deve ter pelo menos 2 caracteres.',

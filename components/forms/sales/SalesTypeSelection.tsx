@@ -1,5 +1,3 @@
-'use client';
-
 import { UseFormReturn } from 'react-hook-form';
 import { FormValues } from '@/lib/schema';
 import {
@@ -11,77 +9,54 @@ import {
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Store } from 'lucide-react';
 
-interface StoreSelectionProps {
+interface SalesTypeSelectionProps {
   form: UseFormReturn<FormValues>;
-  onStoreSelect: (value: string) => void;
+  onSalesTypeSelect: (type: 'direct' | 'delivery') => void;
+  salesTypes: ('direct' | 'delivery')[];
 }
 
-type Store = {
-  id: string;
-  name: string;
-  description: string;
-  salesTypes: ('delivery' | 'direct')[];
-};
-
-export const stores: Store[] = [
-  {
-    id: '1',
-    name: 'Clássica',
-    description: 'A loja original com produtos tradicionais.',
-    salesTypes: ['delivery'],
-  },
-  {
-    id: '3',
-    name: 'Moderna',
-    description: 'Uma loja moderna com designs contemporâneos.',
-    salesTypes: ['delivery'],
-  },
-  {
-    id: '6',
-    name: 'Iluminação',
-    description: 'Especializada em iluminação de qualidade.',
-    salesTypes: ['delivery', 'direct'],
-  },
-];
-
-export const StoreSelection = ({
+export const SalesTypeSelection = ({
   form,
-  onStoreSelect,
-}: StoreSelectionProps) => (
+  onSalesTypeSelect,
+  salesTypes,
+}: SalesTypeSelectionProps) => (
   <div className='space-y-8'>
     <h2 className='scroll-m-20 text-4xl font-semibold tracking-tight'>
-      Selecione a Loja
+      Escolha o Tipo de Venda
     </h2>
     <FormField
       control={form.control}
-      name='storeId'
+      name='salesType'
       render={({ field }) => (
         <FormItem className='space-y-3 animate-slide-fade'>
-          {/* <FormLabel>Loja</FormLabel> */}
           <FormControl>
             <RadioGroup
               onValueChange={(value: string) => {
                 field.onChange(value);
-                onStoreSelect(value);
+                onSalesTypeSelect(value as 'direct' | 'delivery');
               }}
-              defaultValue={field.value}
-              className='grid grid-cols-1 sm:grid-cols-3 gap-4'
+              defaultValue={field.value || undefined} // Ensure compatibility with RadioGroup
+              className='grid grid-cols-1 sm:grid-cols-2 gap-4'
             >
-              {stores.map((store) => (
+              {salesTypes.map((type) => (
                 <label
-                  key={store.id}
-                  htmlFor={`store-${store.id}`}
+                  key={type}
+                  htmlFor={`sales-type-${type}`}
                   className='flex flex-col items-center justify-between rounded-lg border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary cursor-pointer'
                 >
                   <RadioGroupItem
-                    value={store.id}
+                    value={type}
                     className='peer sr-only'
-                    id={`store-${store.id}`}
+                    id={`sales-type-${type}`}
                   />
                   <Store className='mb-3 h-6 w-6' />
-                  <h3 className='text-lg font-medium'>{store.name}</h3>
+                  <h3 className='text-lg font-medium'>
+                    {type === 'direct' ? 'Venda Direta' : 'Entrega'}
+                  </h3>
                   <p className='text-sm text-muted-foreground'>
-                    {store.description}
+                    {type === 'direct'
+                      ? 'Venda feita diretamente na loja.'
+                      : 'Produtos com entrega incluída.'}
                   </p>
                 </label>
               ))}

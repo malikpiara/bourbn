@@ -1,8 +1,6 @@
-import { BlobProvider } from '@react-pdf/renderer';
-import { OrderDocument } from '@/components/documents/OrderDocument';
 import * as React from 'react';
 import { zodResolver } from '@hookform/resolvers/zod';
-import { useForm } from 'react-hook-form';
+import { FormProvider, useForm } from 'react-hook-form';
 import { Button } from '@/components/ui/button';
 import { Form } from '@/components/ui/form';
 import { formSchema, FormValues } from '@/lib/schema';
@@ -16,22 +14,31 @@ import CustomerSection from './CustomerSection';
 import ProductSection from './ProductSection';
 import { OrderMetadata } from './OrderMetadata';
 import { fillFormWithTestData } from '@/lib/mocks/testData';
+import { SalesTypeSelection } from './SalesTypeSelection';
+import { stores } from './StoreSelection';
+import { PreviewStep } from './PreviewStep';
 
 // Define our form steps
-type FormStep = 'store' | 'details' | 'preview';
+type FormStep = 'store' | 'salesType' | 'details' | 'preview';
 
 export function SalesForm() {
-  // Replace the numeric step with our new step type
   const [currentStep, setCurrentStep] = useState<FormStep>('store');
+  const [selectedSalesType, setSelectedSalesType] = useState<
+    'direct' | 'delivery' | null
+  >(null);
+
   const [isGenerating, setIsGenerating] = useState(false);
   const [pdfError, setPdfError] = useState<string | null>(null);
   const [documentData, setDocumentData] = useState<DocumentData | null>(null);
   const [isCollapsibleOpen, setIsCollapsibleOpen] = useState(false);
 
+  // Initialize the form with default values
   const form = useForm<FormValues>({
     resolver: zodResolver(formSchema),
     mode: 'onBlur',
     defaultValues: {
+      storeId: '',
+      salesType: null,
       name: '',
       orderNumber: DEFAULT_ORDER_NUMBER,
       date: new Date(),
@@ -43,7 +50,6 @@ export function SalesForm() {
       postalCode: '',
       city: '',
       tableEntries: [],
-      storeId: '',
       elevator: false,
       notes: '',
       sameAddress: true,
@@ -54,9 +60,29 @@ export function SalesForm() {
     },
   });
 
-  const handleStoreSelect = (value: string) => {
-    form.setValue('storeId', value);
-    setCurrentStep('details');
+  // Handle store selection logic
+  const handleStoreSelect = (storeId: string) => {
+    const selectedStore = stores.find((store) => store.id === storeId);
+    form.setValue('storeId', storeId);
+
+    if (selectedStore?.salesTypes.length === 1) {
+      // Automatically select the only available sales type
+      const singleSalesType = selectedStore.salesTypes[0] as
+        | 'direct'
+        | 'delivery';
+      setSelectedSalesType(singleSalesType);
+      form.setValue('salesType', singleSalesType);
+      setCurrentStep('details');
+    } else {
+      setCurrentStep('salesType'); // Proceed to sales type selection step
+    }
+  };
+
+  // Handle sales type selection logic
+  const handleSalesTypeSelect = (type: 'direct' | 'delivery') => {
+    setSelectedSalesType(type);
+    form.setValue('salesType', type);
+    setCurrentStep('details'); // Proceed to details step
   };
 
   // New function to handle preview generation
@@ -123,108 +149,75 @@ export function SalesForm() {
   }, [form]);
 
   return (
-    <div className='space-y-8'>
-      {/* Development-only test data button */}
-      {process.env.NODE_ENV === 'development' && (
-        <Button
-          type='button'
-          onClick={handleFillTestData}
-          variant='outline'
-          className='mb-4'
-        >
-          Fill Test Data
-        </Button>
-      )}
-
-      {currentStep === 'preview' ? (
-        <BlobProvider document={<OrderDocument {...documentData!} />}>
-          {({ url, loading, error: blobError }) => (
-            <div className='space-y-6 animate-slide-fade'>
-              <h2 className='scroll-m-20 text-4xl font-semibold tracking-tight'>
-                Pré-visualização do Documento
-              </h2>
-
-              <div className='border rounded-lg p-4 bg-gray-50'>
-                <h3 className='text-lg font-medium mb-2'>
-                  Detalhes da Encomenda
-                </h3>
-                {/* Display order summary */}
-                {documentData && (
-                  <div className='space-y-2'>
-                    <p>Cliente: {documentData.customer.name}</p>
-                    <p>Número da Encomenda: {documentData.order.id}</p>
-                    <p>Total de Items: {documentData.order.items.length}</p>
-                    <p>
-                      Valor Total: €{documentData.order.totalAmount.toFixed(2)}
-                    </p>
-                  </div>
-                )}
-              </div>
-
-              <div className='flex gap-4'>
-                <Button
-                  type='button'
-                  onClick={() => handleDownload(url)}
-                  disabled={loading || isGenerating}
-                  className='flex-1'
-                >
-                  {isGenerating ? 'A gerar PDF...' : 'Transferir PDF'}
-                </Button>
-                <Button
-                  type='button'
-                  onClick={handleBackToForm}
-                  variant='outline'
-                  className='flex-1'
-                >
-                  Voltar ao Formulário
-                </Button>
-              </div>
-
-              {(pdfError || blobError) && (
-                <p className='text-sm text-red-700 mt-2'>
-                  {pdfError ||
-                    'Ocorreu um erro ao gerar o documento. Por favor, tente novamente.'}
-                </p>
-              )}
-            </div>
-          )}
-        </BlobProvider>
-      ) : (
-        <Form {...form}>
-          <form
-            onSubmit={form.handleSubmit(handlePreviewGeneration)}
-            autoComplete='off'
-            className='space-y-8'
+    <FormProvider {...form}>
+      <div className='space-y-8'>
+        {/* Development-only test data button */}
+        {process.env.NODE_ENV === 'development' && (
+          <Button
+            type='button'
+            onClick={handleFillTestData}
+            variant='outline'
+            className='mb-4'
           >
-            {currentStep === 'store' ? (
-              <StoreSelection form={form} onStoreSelect={handleStoreSelect} />
-            ) : (
-              <>
-                <h2 className='scroll-m-20 text-4xl font-semibold tracking-tight'>
-                  Nova Encomenda
-                </h2>
+            Fill Test Data
+          </Button>
+        )}
 
-                <OrderMetadata
-                  form={form}
-                  isOpen={isCollapsibleOpen}
-                  onOpenChange={setIsCollapsibleOpen}
-                />
+        {/* Render the appropriate step */}
+        {currentStep === 'store' && (
+          <StoreSelection form={form} onStoreSelect={handleStoreSelect} />
+        )}
 
-                <ProductSection form={form} />
-                <CustomerSection form={form} />
+        {currentStep === 'salesType' && (
+          <SalesTypeSelection
+            form={form} // Pass the form object from useForm
+            onSalesTypeSelect={handleSalesTypeSelect}
+            salesTypes={['direct', 'delivery']}
+          />
+        )}
 
-                <Button
-                  type='submit'
-                  disabled={!form.formState.isValid}
-                  className='w-full'
-                >
-                  Pré-visualizar Documento
-                </Button>
-              </>
-            )}
-          </form>
-        </Form>
-      )}
-    </div>
+        {currentStep === 'details' && (
+          <Form {...form}>
+            <form
+              onSubmit={form.handleSubmit(handlePreviewGeneration)}
+              className='space-y-8'
+            >
+              <OrderMetadata
+                form={form}
+                isOpen={isCollapsibleOpen}
+                onOpenChange={setIsCollapsibleOpen}
+              />
+
+              {selectedSalesType === 'delivery' && (
+                <>
+                  <ProductSection form={form} />
+                  <CustomerSection form={form} />
+                </>
+              )}
+
+              {selectedSalesType === 'direct' && <div>{/* TODO */}</div>}
+
+              <Button
+                type='submit'
+                disabled={!form.formState.isValid}
+                className='w-full'
+              >
+                Pré-visualizar Documento
+              </Button>
+            </form>
+          </Form>
+        )}
+
+        {currentStep === 'preview' && documentData && (
+          <PreviewStep
+            documentData={documentData}
+            handleDownload={handleDownload}
+            handleBackToForm={handleBackToForm}
+            pdfError={pdfError}
+            isGenerating={isGenerating}
+          />
+        )}
+      </div>
+    </FormProvider>
   );
 }

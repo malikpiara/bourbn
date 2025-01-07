@@ -33,6 +33,7 @@ export interface OrderItem {
 export interface Order {
   id: string;
   storeId: string;
+  salesType: string;
   date: string;
   items: OrderItem[];
   vat: string;
