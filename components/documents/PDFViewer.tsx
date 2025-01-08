@@ -11,7 +11,7 @@ const textLayerStyles = `
   }
 
   .react-pdf__Page__textContent ::selection {
-    background: rgba(250, 244, 211, 1);  /* Light yellow */
+    background: rgba(250, 233, 157, 1);  /* Light yellow */
     color: inherit;
   }
 
@@ -21,13 +21,13 @@ const textLayerStyles = `
   }
 
   .textLayer ::selection {
-    background: rgba(250, 244, 211, 1);
+    background: rgba(250, 233, 157, 1);
     color: inherit;
   }
 
   /* For Firefox */
   .textLayer ::-moz-selection {
-    background: rgba(250, 244, 211, 1);
+    background: rgba(250, 233, 157, 1);
     color: inherit;
   }
 `;
@@ -109,7 +109,10 @@ const PDFViewer = ({ url, className }: PDFViewerProps) => {
             </div>
           }
         >
-          <div key={key} className='animate-slide-fade'>
+          <div
+            key={key}
+            className='animate-slide-fade rounded-lg overflow-hidden'
+          >
             <Page
               pageNumber={pageNumber}
               renderTextLayer={true}

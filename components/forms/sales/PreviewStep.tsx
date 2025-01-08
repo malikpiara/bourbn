@@ -4,6 +4,7 @@ import { DocumentData } from '@/types/document';
 import { OrderDocument } from '@/components/documents/OrderDocument';
 import { DirectSalesDocument } from '@/components/documents/DirectSales';
 import dynamic from 'next/dynamic';
+import { useEffect } from 'react';
 
 const PDFViewer = dynamic(() => import('@/components/documents/PDFViewer'), {
   ssr: false,
@@ -24,6 +25,10 @@ export const PreviewStep = ({
   pdfError,
   isGenerating,
 }: PreviewStepProps) => {
+  // Scroll to top when component mounts
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
   if (!documentData) {
     return <p>Erro: Os dados do documento estão indisponíveis.</p>;
   }
@@ -136,7 +141,7 @@ export const PreviewStep = ({
         </div>
 
         {/* Right side - PDF Preview */}
-        <div className='w-[800px] shrink-0 bg-gray-50 p-8 flex items-center justify-center rounded-lg overflow-y-auto'>
+        <div className='w-[800px] h-[1100px] shrink-0 bg-gray-100 p-8 flex items-center justify-center rounded-lg '>
           <BlobProvider document={<DocumentComponent {...documentData} />}>
             {({ url, loading }) => (
               <div className='h-full'>
