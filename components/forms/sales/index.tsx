@@ -17,9 +17,10 @@ import { fillFormWithTestData } from '@/lib/mocks/testData';
 import { SalesTypeSelection } from './SalesTypeSelection';
 import { stores } from './StoreSelection';
 import { PreviewStep } from './PreviewStep';
+import { PaymentSection } from './PaymentSection';
 
 // Define our form steps
-type FormStep = 'store' | 'salesType' | 'details' | 'preview';
+type FormStep = 'store' | 'salesType' | 'details' | 'payments' | 'preview';
 
 export function SalesForm() {
   const [currentStep, setCurrentStep] = useState<FormStep>('store');
@@ -157,7 +158,15 @@ export function SalesForm() {
         {currentStep === 'details' && (
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(handlePreviewGeneration)}
+              onSubmit={form.handleSubmit((values) => {
+                // If it's a delivery, go to payments step
+                if (values.salesType === 'delivery') {
+                  setCurrentStep('payments');
+                } else {
+                  // For direct sales, generate preview directly
+                  handlePreviewGeneration(values);
+                }
+              })}
               className='space-y-8'
             >
               <OrderMetadata
@@ -182,11 +191,40 @@ export function SalesForm() {
                       !form.watch('billingCity')))
                 }
               >
-                Pré-visualizar Documento
+                {form.watch('salesType') === 'delivery'
+                  ? 'Continuar para Pagamentos'
+                  : 'Pré-visualizar Documento'}
               </Button>
             </form>
           </Form>
         )}
+
+        {/* Only show payments step if it's a delivery */}
+        {currentStep === 'payments' &&
+          form.watch('salesType') === 'delivery' && (
+            <Form {...form}>
+              <form
+                onSubmit={form.handleSubmit(handlePreviewGeneration)}
+                className='space-y-8'
+              >
+                <PaymentSection form={form} />
+
+                <div className='flex justify-between'>
+                  <Button
+                    type='button'
+                    variant='outline'
+                    size={'lg'}
+                    onClick={() => setCurrentStep('details')}
+                  >
+                    Voltar
+                  </Button>
+                  <Button type='submit' size={'lg'}>
+                    Pré-visualizar Documento
+                  </Button>
+                </div>
+              </form>
+            </Form>
+          )}
 
         {currentStep === 'preview' && documentData && (
           <PreviewStep
