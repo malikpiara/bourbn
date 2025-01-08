@@ -3,6 +3,12 @@ import { Button } from '@/components/ui/button';
 import { DocumentData } from '@/types/document';
 import { OrderDocument } from '@/components/documents/OrderDocument';
 import { DirectSalesDocument } from '@/components/documents/DirectSales';
+import dynamic from 'next/dynamic';
+
+// Dynamically import PDFViewer with no SSR
+const PDFViewer = dynamic(() => import('@/components/documents/PDFViewer'), {
+  ssr: false,
+});
 
 interface PreviewStepProps {
   documentData: DocumentData;
@@ -53,6 +59,13 @@ export const PreviewStep = ({
                   </p>
                 )}
               </div>
+            </div>
+
+            {/* PDF Viewer */}
+            <div className='mt-6 mb-6'>
+              {!loading && url && (
+                <PDFViewer url={url} className='w-full min-h-[800px]' />
+              )}
             </div>
 
             <div className='flex gap-4'>
