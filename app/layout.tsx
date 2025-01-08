@@ -2,6 +2,23 @@ import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
 import './globals.css';
 
+// Add polyfill to try and handle problems with browser compatibility.
+if (typeof window !== 'undefined') {
+  if (!Promise.withResolvers) {
+    Promise.withResolvers = function <T>() {
+      let resolve!: (value: T | PromiseLike<T>) => void;
+      let reject!: (reason?: unknown) => void;
+
+      const promise = new Promise<T>((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
+
+      return { promise, resolve, reject };
+    };
+  }
+}
+
 const inter = Inter({
   variable: '--font-lato',
   subsets: ['latin'],
@@ -21,7 +38,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang='en'>
-      <body className={`$${inter.variable} antialiased`}>{children}</body>
+      <body className={`${inter.variable} antialiased`}>{children}</body>
     </html>
   );
 }
