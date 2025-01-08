@@ -2,9 +2,22 @@ import type { NextConfig } from 'next';
 
 const config: NextConfig = {
   webpack: (config) => {
-    // Type assertion for the config object
+    // First, let's handle the polyfill entry point
+    const entry = async () => {
+      const entries = await (typeof config.entry === 'function'
+        ? config.entry()
+        : config.entry);
+      return {
+        ...entries,
+        // Add our polyfill as a new entry point
+        polyfills: './polyfills.ts',
+      };
+    };
+
+    // Now return the complete configuration
     return {
       ...config,
+      entry, // Add our modified entry configuration
       resolve: {
         ...config.resolve,
         alias: {
@@ -14,7 +27,8 @@ const config: NextConfig = {
       },
     };
   },
-  // Configure headers for PDF.js worker
+
+  // Keep your existing headers configuration
   async headers() {
     return [
       {
@@ -32,7 +46,8 @@ const config: NextConfig = {
       },
     ];
   },
-  // Allow worker to be loaded
+
+  // Keep your existing experimental configuration
   experimental: {
     turbo: {
       rules: {

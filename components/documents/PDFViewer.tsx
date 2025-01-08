@@ -1,10 +1,12 @@
+'use client';
+
 import React, { useState, useEffect } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { Button } from '@/components/ui/button';
 
-// Custom styles for text selection
+// Custom styles for text selection - keeping this from the second file as it adds useful functionality
 const textLayerStyles = `
   .react-pdf__Page__textContent {
     opacity: 0.5;
@@ -32,7 +34,29 @@ const textLayerStyles = `
   }
 `;
 
-pdfjs.GlobalWorkerOptions.workerSrc = `//unpkg.com/pdfjs-dist@${pdfjs.version}/build/pdf.worker.min.mjs`;
+// Try to set up the polyfill, but wrap it in a try-catch in case something goes wrong
+try {
+  if (typeof window !== 'undefined' && !Promise.withResolvers) {
+    Promise.withResolvers = function <T>() {
+      let resolve!: (value: T | PromiseLike<T>) => void;
+      let reject!: (reason?: unknown) => void;
+
+      const promise = new Promise<T>((res, rej) => {
+        resolve = res;
+        reject = rej;
+      });
+
+      return { promise, resolve, reject };
+    };
+  }
+
+  pdfjs.GlobalWorkerOptions.workerSrc = new URL(
+    'pdfjs-dist/build/pdf.worker.min.mjs',
+    import.meta.url
+  ).toString();
+} catch (error) {
+  console.error('Error initializing PDF viewer:', error);
+}
 
 interface PDFViewerProps {
   url: string | null;
@@ -46,9 +70,15 @@ const PDFViewer = ({ url, className }: PDFViewerProps) => {
   const [error, setError] = useState<Error | null>(null);
   const [isClient, setIsClient] = useState(false);
   const [key, setKey] = useState(0);
+  const [initializationError, setInitializationError] =
+    useState<boolean>(false);
 
   useEffect(() => {
     setIsClient(true);
+    // Check if the necessary features are available
+    if (typeof window !== 'undefined' && !Promise.withResolvers) {
+      setInitializationError(true);
+    }
 
     // Add custom styles to document
     const styleSheet = document.createElement('style');
@@ -63,6 +93,7 @@ const PDFViewer = ({ url, className }: PDFViewerProps) => {
   const onDocumentLoadSuccess = ({ numPages }: { numPages: number }): void => {
     setNumPages(numPages);
     setLoading(false);
+    setError(null);
   };
 
   const onDocumentLoadError = (error: Error): void => {
@@ -80,9 +111,30 @@ const PDFViewer = ({ url, className }: PDFViewerProps) => {
     return null;
   }
 
+  // Common loading state component for reuse
+  const LoadingState = () => (
+    <div className='flex justify-center items-center h-64 bg-gray-100 rounded-lg'>
+      <p className='text-gray-500'>A carregar PDF...</p>
+    </div>
+  );
+
+  // If we detect that the browser doesn't support necessary features
+  if (initializationError) {
+    return (
+      <div className='flex flex-col justify-center items-center h-64 bg-gray-100 rounded-lg'>
+        <p className='text-gray-500'>
+          A visualização do PDF não está disponível no momento.
+        </p>
+        <p className='text-sm text-gray-400 mt-2'>
+          Por favor, utilize o botão de download para ver o documento.
+        </p>
+      </div>
+    );
+  }
+
   if (!url) {
     return (
-      <div className='flex justify-center items-center h-64 bg-gray-50 rounded-lg'>
+      <div className='flex justify-center items-center h-64 bg-gray-100 rounded-lg'>
         <p className='text-gray-500'>Nenhum PDF para visualizar</p>
       </div>
     );
@@ -90,41 +142,39 @@ const PDFViewer = ({ url, className }: PDFViewerProps) => {
 
   return (
     <div className={`flex flex-col ${className || ''}`}>
-      {/* PDF Document */}
       <div className='flex-grow mb-16'>
         <Document
           file={url}
           onLoadSuccess={onDocumentLoadSuccess}
           onLoadError={onDocumentLoadError}
-          loading={
-            <div className='flex justify-center items-center h-64'>
-              <p className='text-gray-500'>A carregar PDF...</p>
-            </div>
-          }
+          loading={<LoadingState />}
           error={
-            <div className='flex justify-center items-center h-64 bg-red-50 rounded-lg'>
-              <p className='text-red-500'>
-                {error ? `Erro: ${error.message}` : 'Erro ao carregar o PDF!'}
+            <div className='flex flex-col justify-center items-center h-64 bg-gray-100 rounded-lg'>
+              <p className='text-gray-500'>Não foi possível carregar o PDF.</p>
+              <p className='text-sm text-gray-400 mt-2'>
+                Por favor, utilize o botão de download para ver o documento.
               </p>
             </div>
           }
         >
-          <div
-            key={key}
-            className='animate-slide-fade rounded-lg overflow-hidden'
-          >
-            <Page
-              pageNumber={pageNumber}
-              renderTextLayer={true}
-              renderAnnotationLayer={true}
-              className='rounded-3xl'
-              width={700}
-            />
-          </div>
+          {!error && !loading && (
+            <div
+              key={key}
+              className='animate-slide-fade rounded-lg overflow-hidden'
+            >
+              <Page
+                pageNumber={pageNumber}
+                renderTextLayer={true}
+                renderAnnotationLayer={true}
+                className='rounded-3xl'
+                width={700}
+              />
+            </div>
+          )}
         </Document>
       </div>
 
-      {/* Fixed controls at bottom */}
+      {/* Only show controls if everything loaded successfully */}
       {!loading && !error && numPages > 1 && (
         <div className='fixed bottom-8 right-5 flex items-center gap-4 p-4 bg-white/80 backdrop-blur-sm rounded-full shadow-lg z-10'>
           <Button

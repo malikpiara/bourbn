@@ -141,7 +141,7 @@ export const PreviewStep = ({
         </div>
 
         {/* Right side - PDF Preview */}
-        <div className='w-[800px] h-[1100px] shrink-0 bg-gray-100 p-8 flex items-center justify-center rounded-lg '>
+        <div className='w-[750px] h-[1100px] shrink-0 bg-gray-100 p-8 flex items-center justify-center rounded-lg'>
           <BlobProvider document={<DocumentComponent {...documentData} />}>
             {({ url, loading }) => (
               <div className='h-full'>
