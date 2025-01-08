@@ -33,7 +33,7 @@ export const stores: Store[] = [
   {
     id: '3',
     name: 'Moderna',
-    description: 'Uma loja moderna com designs contemporâneos.',
+    description: 'Uma loja com designs contemporâneos.',
     salesTypes: ['delivery'],
   },
   {

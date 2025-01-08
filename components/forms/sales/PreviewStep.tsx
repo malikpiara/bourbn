@@ -49,9 +49,9 @@ export const PreviewStep = ({
                   Detalhes da {documentType}
                 </h2>
 
-                <div className='border rounded-lg  divide-y divide-gray-100'>
+                <div className='border rounded-lg  divide-y divide-neutral-100'>
                   <div className='px-6 py-4'>
-                    <h3 className='text-lg font-medium text-gray-900'>
+                    <h3 className='text-lg font-medium text-neutral-900'>
                       Detalhes da {documentType}
                     </h3>
                   </div>
@@ -59,43 +59,43 @@ export const PreviewStep = ({
                   <div className='px-6 py-4'>
                     <dl className='space-y-4'>
                       <div className='flex justify-between items-center gap-4'>
-                        <dt className='text-sm font-medium text-gray-600'>
+                        <dt className='text-sm font-medium text-neutral-600'>
                           Cliente
                         </dt>
-                        <dd className='text-sm font-semibold text-gray-900'>
+                        <dd className='text-sm font-semibold text-neutral-900'>
                           {documentData.customer.name}
                         </dd>
                       </div>
                       <div className='flex justify-between items-center gap-4'>
-                        <dt className='text-sm font-medium text-gray-600'>
+                        <dt className='text-sm font-medium text-neutral-600'>
                           Número
                         </dt>
-                        <dd className='text-sm font-semibold text-gray-900'>
+                        <dd className='text-sm font-semibold text-neutral-900'>
                           {documentData.order.id}
                         </dd>
                       </div>
                       <div className='flex justify-between items-center gap-4'>
-                        <dt className='text-sm font-medium text-gray-600'>
+                        <dt className='text-sm font-medium text-neutral-600'>
                           Total de Itens
                         </dt>
-                        <dd className='text-sm font-semibold text-gray-900'>
+                        <dd className='text-sm font-semibold text-neutral-900'>
                           {documentData.order.items.length}
                         </dd>
                       </div>
                       <div className='flex justify-between items-center gap-4'>
-                        <dt className='text-sm font-medium text-gray-600'>
+                        <dt className='text-sm font-medium text-neutral-600'>
                           Valor Total
                         </dt>
-                        <dd className='text-sm font-semibold text-gray-900'>
+                        <dd className='text-sm font-semibold text-neutral-900'>
                           €{documentData.order.totalAmount.toFixed(2)}
                         </dd>
                       </div>
                       {isDelivery && documentData.customer.address && (
                         <div className='flex justify-between items-start gap-4'>
-                          <dt className='text-sm font-medium text-gray-600'>
+                          <dt className='text-sm font-medium text-neutral-600'>
                             Morada de Entrega
                           </dt>
-                          <dd className='text-sm font-semibold text-gray-900 text-right'>
+                          <dd className='text-sm font-semibold text-neutral-900 text-right'>
                             {documentData.customer.address.address1}
                             {documentData.customer.address.address2 && (
                               <span className='block'>
@@ -141,7 +141,7 @@ export const PreviewStep = ({
         </div>
 
         {/* Right side - PDF Preview */}
-        <div className='w-[750px] h-[1100px] shrink-0 bg-gray-100 p-8 flex items-center justify-center rounded-lg'>
+        <div className='w-[750px] h-[1100px] shrink-0 bg-[#F6F3F0] p-8 flex items-center justify-center rounded-lg'>
           <BlobProvider document={<DocumentComponent {...documentData} />}>
             {({ url, loading }) => (
               <div className='h-full'>

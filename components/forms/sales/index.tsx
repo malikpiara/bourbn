@@ -172,6 +172,7 @@ export function SalesForm() {
 
               <Button
                 type='submit'
+                size={'lg'}
                 disabled={
                   !form.formState.isValid ||
                   (form.watch('salesType') === 'delivery' &&
@@ -180,7 +181,6 @@ export function SalesForm() {
                       !form.watch('billingPostalCode') ||
                       !form.watch('billingCity')))
                 }
-                className='w-full'
               >
                 Pré-visualizar Documento
               </Button>

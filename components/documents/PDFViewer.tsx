@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 import { Button } from '@/components/ui/button';
+import { Copy } from 'lucide-react'; // We'll use this icon for the copy button
 
 // Custom styles for text selection - keeping this from the second file as it adds useful functionality
 const textLayerStyles = `
@@ -14,7 +15,7 @@ const textLayerStyles = `
 
   .react-pdf__Page__textContent ::selection {
     background: rgba(250, 233, 157, 1);  /* Light yellow */
-    color: inherit;
+    color: #000;
   }
 
   .textLayer {
@@ -24,15 +25,27 @@ const textLayerStyles = `
 
   .textLayer ::selection {
     background: rgba(250, 233, 157, 1);
-    color: inherit;
+    color: #000;
   }
 
   /* For Firefox */
   .textLayer ::-moz-selection {
     background: rgba(250, 233, 157, 1);
-    color: inherit;
+    color: #000;
+  }
+
+  .react-pdf__Page__textContent {
+    pointer-events: auto !important;
   }
 `;
+
+// Interface for our selection position
+interface SelectionPosition {
+  x: number;
+  y: number;
+  show: boolean;
+  text: string;
+}
 
 // Try to set up the polyfill, but wrap it in a try-catch in case something goes wrong
 try {
@@ -72,6 +85,89 @@ const PDFViewer = ({ url, className }: PDFViewerProps) => {
   const [key, setKey] = useState(0);
   const [initializationError, setInitializationError] =
     useState<boolean>(false);
+
+  // Add new state for selection position
+  const [selection, setSelection] = useState<SelectionPosition>({
+    x: 0,
+    y: 0,
+    show: false,
+    text: '',
+  });
+
+  // Handler for text selection
+  const handleTextSelection = useCallback(() => {
+    const selection = window.getSelection();
+
+    // Log the selection to debug
+    console.log('Selection:', selection?.toString());
+
+    if (selection && selection.toString().trim().length > 0) {
+      // Make sure we're selecting text within the PDF document
+      const range = selection.getRangeAt(0);
+      const rect = range.getBoundingClientRect();
+
+      // Check if the selection is within our PDF container
+      const pdfContainer = document.querySelector('.react-pdf__Document');
+      if (!pdfContainer?.contains(range.commonAncestorContainer)) {
+        return;
+      }
+
+      setSelection({
+        x: rect.left + rect.width / 2,
+        y: rect.top,
+        show: true,
+        text: selection.toString().trim(), // Make sure to trim whitespace
+      });
+    } else {
+      setSelection((prev) => ({ ...prev, show: false }));
+    }
+  }, []);
+
+  // Modify the handleCopy function to ensure we're copying the text
+  const handleCopy = useCallback(async () => {
+    try {
+      if (!selection.text) {
+        console.warn('No text selected to copy');
+        return;
+      }
+
+      // Try using the modern clipboard API first
+      await navigator.clipboard.writeText(selection.text);
+      console.log('Text copied successfully:', selection.text);
+
+      // Add a fallback for older browsers
+      if (!navigator.clipboard) {
+        const textArea = document.createElement('textarea');
+        textArea.value = selection.text;
+        document.body.appendChild(textArea);
+        textArea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textArea);
+      }
+
+      // Hide the tooltip after successful copy
+      setSelection((prev) => ({ ...prev, show: false }));
+    } catch (err) {
+      console.error('Failed to copy text:', err);
+      // Optionally, show an error message to the user
+    }
+  }, [selection.text]);
+
+  // Add event listeners for selection changes
+  useEffect(() => {
+    document.addEventListener('selectionchange', handleTextSelection);
+    // Also hide tooltip when clicking outside
+    document.addEventListener('mousedown', (e) => {
+      if (!(e.target as Element).closest('.selection-tooltip')) {
+        setSelection((prev) => ({ ...prev, show: false }));
+      }
+    });
+
+    return () => {
+      document.removeEventListener('selectionchange', handleTextSelection);
+      document.removeEventListener('mousedown', () => {});
+    };
+  }, [handleTextSelection]);
 
   useEffect(() => {
     setIsClient(true);
@@ -113,19 +209,19 @@ const PDFViewer = ({ url, className }: PDFViewerProps) => {
 
   // Common loading state component for reuse
   const LoadingState = () => (
-    <div className='flex justify-center items-center h-64 bg-gray-100 rounded-lg'>
-      <p className='text-gray-500'>A carregar PDF...</p>
+    <div className='flex justify-center items-center h-64 bg-neutral-100 rounded-lg'>
+      <p className='text-neutral-500'>A carregar PDF...</p>
     </div>
   );
 
   // If we detect that the browser doesn't support necessary features
   if (initializationError) {
     return (
-      <div className='flex flex-col justify-center items-center h-64 bg-gray-100 rounded-lg'>
-        <p className='text-gray-500'>
+      <div className='flex flex-col justify-center items-center h-64 bg-neutral-100 rounded-lg'>
+        <p className='text-neutral-500'>
           A visualização do PDF não está disponível no momento.
         </p>
-        <p className='text-sm text-gray-400 mt-2'>
+        <p className='text-sm text-neutral-400 mt-2'>
           Por favor, utilize o botão de download para ver o documento.
         </p>
       </div>
@@ -134,8 +230,8 @@ const PDFViewer = ({ url, className }: PDFViewerProps) => {
 
   if (!url) {
     return (
-      <div className='flex justify-center items-center h-64 bg-gray-100 rounded-lg'>
-        <p className='text-gray-500'>Nenhum PDF para visualizar</p>
+      <div className='flex justify-center items-center h-64 bg-neutral-100 rounded-lg'>
+        <p className='text-neutral-500'>Nenhum PDF para visualizar</p>
       </div>
     );
   }
@@ -149,28 +245,29 @@ const PDFViewer = ({ url, className }: PDFViewerProps) => {
           onLoadError={onDocumentLoadError}
           loading={<LoadingState />}
           error={
-            <div className='flex flex-col justify-center items-center h-64 bg-gray-100 rounded-lg'>
-              <p className='text-gray-500'>Não foi possível carregar o PDF.</p>
-              <p className='text-sm text-gray-400 mt-2'>
+            <div className='flex flex-col justify-center items-center h-64 bg-neutral-100 rounded-lg'>
+              <p className='text-neutral-500'>
+                Não foi possível carregar o PDF.
+              </p>
+              <p className='text-sm text-neutral-400 mt-2'>
                 Por favor, utilize o botão de download para ver o documento.
               </p>
             </div>
           }
         >
           {!error && !loading && (
-            <div
-              key={key}
-              className='animate-slide-fade rounded-lg overflow-hidden'
-            >
+            <div key={key} className='animate-slide-fade '>
               <Page
                 pageNumber={pageNumber}
                 renderTextLayer={true}
                 renderAnnotationLayer={true}
-                className='rounded-3xl'
+                className='rounded-lg overflow-hidden'
                 width={700}
               />
             </div>
           )}
+
+          <SelectionTooltip position={selection} onCopy={handleCopy} />
         </Document>
       </div>
 
@@ -200,6 +297,41 @@ const PDFViewer = ({ url, className }: PDFViewerProps) => {
           </Button>
         </div>
       )}
+    </div>
+  );
+};
+
+// We'll create a separate component for our selection tooltip
+const SelectionTooltip = ({
+  position,
+  onCopy,
+}: {
+  position: SelectionPosition;
+  onCopy: () => void;
+}) => {
+  if (!position.show) return null;
+
+  const handleClick = (e: React.MouseEvent) => {
+    e.preventDefault(); // Prevent losing selection
+    e.stopPropagation(); // Prevent event bubbling
+    onCopy();
+  };
+
+  return (
+    <div
+      className='selection-tooltip fixed z-50 bg-white rounded-lg shadow-lg px-3 py-2 transform -translate-x-1/2'
+      style={{
+        top: `${position.y - 45}px`,
+        left: `${position.x}px`,
+      }}
+    >
+      <button
+        onClick={handleClick}
+        className='flex items-center gap-2 text-sm text-neutral-700 hover:text-neutral-900'
+      >
+        <Copy size={14} />
+        <span>Copiar</span>
+      </button>
     </div>
   );
 };
