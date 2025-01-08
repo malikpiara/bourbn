@@ -8,7 +8,7 @@ const SalesForm = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className='p-8 w-full max-w-7xl mx-auto'>
+      <div className='p-7 w-full max-w-7xl mx-auto'>
         {/* Header */}
         <div className='flex justify-between items-center mb-8'>
           <Skeleton className='h-8 w-[200px]' />
