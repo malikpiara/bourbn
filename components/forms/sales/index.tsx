@@ -53,6 +53,9 @@ export function SalesForm() {
       billingAddress2: '',
       billingPostalCode: '',
       billingCity: '',
+      firstPayment: 0, // Changed to number to match schema
+      secondPayment: 0, // Changed to number to match schema
+      paymentType: undefined,
     },
   });
 
@@ -159,11 +162,10 @@ export function SalesForm() {
           <Form {...form}>
             <form
               onSubmit={form.handleSubmit((values) => {
-                // If it's a delivery, go to payments step
+                // Check the sales type and route accordingly
                 if (values.salesType === 'delivery') {
                   setCurrentStep('payments');
                 } else {
-                  // For direct sales, generate preview directly
                   handlePreviewGeneration(values);
                 }
               })}

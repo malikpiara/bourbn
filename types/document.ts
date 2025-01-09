@@ -2,7 +2,7 @@
 
 export interface Address {
   address1: string;
-  address2: string;
+  address2?: string;
   postalCode: string;
   city: string;
   hasElevator: boolean;
@@ -26,7 +26,7 @@ export interface OrderItem {
   ref: string;
   description: string;
   quantity: number;
-  unitPrice: number;
+  unitPrice: string | number;
   total: number;
 }
 
@@ -39,6 +39,9 @@ export interface Order {
   vat: string;
   totalAmount: number;
   notes?: string;
+  firstPayment?: number;
+  secondPayment?: number;
+  paymentType?: 'mbway' | 'cash' | 'card' | 'transfer';
 }
 
 // Main interface that combines all the above

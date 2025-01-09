@@ -33,60 +33,59 @@ export function PaymentSection({ form }: PaymentSectionProps) {
   const fields = form.watch('tableEntries');
   const orderDate = form.watch('date');
 
-  // Calculate total
+  // First, let's create a type helper for the pre-transformation unitPrice
+  type UnitPrice = string | number;
+
+  // Calculate total with proper type annotations
   const total = fields.reduce((sum, field) => {
     const quantity = field.quantity || 0;
-    const rawUnitPrice = field.unitPrice || '0';
-    const unitPrice = parseFloat(rawUnitPrice.toString().replace(',', '.'));
-    const price = isNaN(unitPrice) ? 0 : unitPrice;
-    return sum + quantity * price;
+    const rawPrice = field.unitPrice as UnitPrice; // Help TypeScript understand the type
+
+    const numericPrice =
+      typeof rawPrice === 'string'
+        ? parseFloat(rawPrice.replace(',', '.')) || 0
+        : rawPrice || 0;
+
+    return sum + quantity * numericPrice;
   }, 0);
 
-  // State for slider and payments
   const [sliderValue, setSliderValue] = useState(50);
-  const [firstPayment, setFirstPayment] = useState('0');
-  const [secondPayment, setSecondPayment] = useState('0');
-  const [paymentType, setPaymentType] = useState<string>('');
 
+  // Initialize payments
   useEffect(() => {
-    const halfTotal = (total / 2).toFixed(2).replace('.', ',');
-    setFirstPayment(halfTotal);
-    setSecondPayment(halfTotal);
-  }, [total]);
-
-  const firstPaymentValue = parseFloat(firstPayment.replace(',', '.')) || 0;
-  const secondPaymentValue = parseFloat(secondPayment.replace(',', '.')) || 0;
-  const paymentsMatchTotal =
-    Math.abs(firstPaymentValue + secondPaymentValue - total) < 0.01;
+    const halfTotal = total / 2;
+    form.setValue('firstPayment', halfTotal);
+    form.setValue('secondPayment', halfTotal);
+  }, [total, form]);
 
   const handleSliderChange = (value: number[]) => {
     const percentage = value[0];
     setSliderValue(percentage);
-    const firstAmount = (total * (percentage / 100))
-      .toFixed(2)
-      .replace('.', ',');
-    const secondAmount = (total * ((100 - percentage) / 100))
-      .toFixed(2)
-      .replace('.', ',');
-    setFirstPayment(firstAmount);
-    setSecondPayment(secondAmount);
+
+    const firstAmount = total * (percentage / 100);
+    const secondAmount = total * ((100 - percentage) / 100);
+
+    form.setValue('firstPayment', firstAmount);
+    form.setValue('secondPayment', secondAmount);
   };
 
-  const handleFirstPaymentChange = (value: string) => {
-    setFirstPayment(value);
-    const firstValue = parseFloat(value.replace(',', '.')) || 0;
-    const remainingValue = total - firstValue;
-    setSecondPayment(remainingValue.toFixed(2).replace('.', ','));
-    setSliderValue((firstValue / total) * 100);
+  const handlePaymentChange = (payment: string, isFirst: boolean) => {
+    const value = parseFloat(payment.replace(',', '.')) || 0;
+    if (isFirst) {
+      form.setValue('firstPayment', value);
+      form.setValue('secondPayment', total - value);
+      setSliderValue((value / total) * 100);
+    } else {
+      form.setValue('secondPayment', value);
+      form.setValue('firstPayment', total - value);
+      setSliderValue(((total - value) / total) * 100);
+    }
   };
 
-  const handleSecondPaymentChange = (value: string) => {
-    setSecondPayment(value);
-    const secondValue = parseFloat(value.replace(',', '.')) || 0;
-    const remainingValue = total - secondValue;
-    setFirstPayment(remainingValue.toFixed(2).replace('.', ','));
-    setSliderValue(((total - secondValue) / total) * 100);
-  };
+  const firstPayment = form.watch('firstPayment') || 0;
+  const secondPayment = form.watch('secondPayment') || 0;
+  const paymentsMatchTotal =
+    Math.abs(firstPayment + secondPayment - total) < 0.01;
 
   return (
     <Card className='w-full animate-slide-fade'>
@@ -114,7 +113,7 @@ export function PaymentSection({ form }: PaymentSectionProps) {
                 onValueChange={handleSliderChange}
                 max={100}
                 step={1}
-                className='mb-6 cursor-pointer hover:cursor-grab active:cursor-grabbing'
+                className='mb-6'
               />
               <div className='flex justify-between text-sm text-muted-foreground'>
                 <span>{sliderValue}%</span>
@@ -123,57 +122,57 @@ export function PaymentSection({ form }: PaymentSectionProps) {
             </div>
           </div>
 
-          {/* Payment Sections */}
-          <div className='space-y-8'>
-            {/* First Payment */}
-            <div className='space-y-4'>
-              <div className='flex items-center justify-between'>
-                <div className='flex-1'>
-                  <h3 className='text-base font-semibold mb-1'>
-                    Pagamento no acto de venda
-                  </h3>
-                  <div className='text-sm text-muted-foreground'>
-                    {format(orderDate, "d 'de' MMMM 'de' yyyy", { locale: pt })}
-                  </div>
-                </div>
-                <Input
-                  type='text'
-                  className='w-32 text-right'
-                  placeholder='0,00'
-                  value={firstPayment}
-                  onChange={(e) => handleFirstPaymentChange(e.target.value)}
-                />
-              </div>
-
-              <Select value={paymentType} onValueChange={setPaymentType}>
-                <SelectTrigger className='w-full'>
-                  <SelectValue placeholder='Selecione o Método de Pagamento' />
-                </SelectTrigger>
-                <SelectContent>
-                  {PAYMENT_TYPES.map((type) => (
-                    <SelectItem key={type.value} value={type.value}>
-                      {type.label}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Second Payment */}
+          {/* First Payment */}
+          <div className='space-y-4'>
             <div className='flex items-center justify-between'>
               <div className='flex-1'>
                 <h3 className='text-base font-semibold mb-1'>
-                  Pagamento no acto de entrega
+                  Pagamento no acto de venda
                 </h3>
+                <div className='text-sm text-muted-foreground'>
+                  {format(orderDate, "d 'de' MMMM 'de' yyyy", { locale: pt })}
+                </div>
               </div>
               <Input
                 type='text'
                 className='w-32 text-right'
-                placeholder='0,00'
-                value={secondPayment}
-                onChange={(e) => handleSecondPaymentChange(e.target.value)}
+                value={formatCurrency(firstPayment).replace('€', '')}
+                onChange={(e) => handlePaymentChange(e.target.value, true)}
               />
             </div>
+
+            <Select
+              value={form.watch('paymentType')}
+              onValueChange={(value) =>
+                form.setValue('paymentType', value as any)
+              }
+            >
+              <SelectTrigger className='w-full'>
+                <SelectValue placeholder='Selecione o Método de Pagamento' />
+              </SelectTrigger>
+              <SelectContent>
+                {PAYMENT_TYPES.map((type) => (
+                  <SelectItem key={type.value} value={type.value}>
+                    {type.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          {/* Second Payment */}
+          <div className='flex items-center justify-between'>
+            <div className='flex-1'>
+              <h3 className='text-base font-semibold mb-1'>
+                Pagamento no acto de entrega
+              </h3>
+            </div>
+            <Input
+              type='text'
+              className='w-32 text-right'
+              value={formatCurrency(secondPayment).replace('€', '')}
+              onChange={(e) => handlePaymentChange(e.target.value, false)}
+            />
           </div>
 
           {/* Warning if payments don't match total */}
@@ -182,8 +181,8 @@ export function PaymentSection({ form }: PaymentSectionProps) {
               <AlertTriangle className='h-4 w-4' />
               <AlertDescription>
                 A soma dos pagamentos (
-                {formatCurrency(firstPaymentValue + secondPaymentValue)}) não
-                coincide com o valor total ({formatCurrency(total)})
+                {formatCurrency(firstPayment + secondPayment)}) não coincide com
+                o valor total ({formatCurrency(total)})
               </AlertDescription>
             </Alert>
           )}

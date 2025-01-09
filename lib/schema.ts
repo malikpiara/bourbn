@@ -1,6 +1,9 @@
 import { isPossiblePhoneNumber } from 'react-phone-number-input';
 import { z } from 'zod';
 
+// Payment type schema
+const paymentTypeSchema = z.enum(['mbway', 'cash', 'card', 'transfer']);
+
 // Table Entries Schema
 export const tableEntrySchema = z.object({
   id: z.number(),
@@ -93,6 +96,23 @@ const deliverySchema = z.object({
   city: z.string().min(5, 'A cidade deve ter pelo menos 5 caracteres.'),
   elevator: z.boolean().default(false),
   sameAddress: z.boolean().default(true),
+  firstPayment: z
+    .union([
+      z.string().transform((val) => parseFloat(val.replace(',', '.')) || 0),
+      z.number(),
+    ])
+    .refine((value) => value >= 0, {
+      message: 'O pagamento não pode ser negativo.',
+    }),
+  secondPayment: z
+    .union([
+      z.string().transform((val) => parseFloat(val.replace(',', '.')) || 0),
+      z.number(),
+    ])
+    .refine((value) => value >= 0, {
+      message: 'O pagamento não pode ser negativo.',
+    }),
+  paymentType: paymentTypeSchema,
   ...billingAddressFields,
 });
 
