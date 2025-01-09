@@ -171,7 +171,7 @@ export default function ProductRow({
               type='button'
               variant='outline'
               size='sm'
-              className='group-hover:opacity-80 transition-opacity text-muted-foreground'
+              className='group-hover:opacity-80 transition-opacity text-muted-foreground font-medium'
             >
               <Trash2 className='h-4 w-4 mr-2' />
               Apagar
