@@ -17,6 +17,7 @@ export const tableEntrySchema = z.object({
       z.string().transform((str) => parseFloat(str.replace(',', '.')) || 0),
       z.number(),
     ])
+    .transform((val) => (typeof val === 'string' ? parseFloat(val) : val))
     .refine((value) => value >= 0, {
       message: 'O preço não pode ser negativo.',
     }),
@@ -103,7 +104,8 @@ const deliverySchema = z.object({
     ])
     .refine((value) => value >= 0, {
       message: 'O pagamento não pode ser negativo.',
-    }),
+    })
+    .optional(),
   secondPayment: z
     .union([
       z.string().transform((val) => parseFloat(val.replace(',', '.')) || 0),
@@ -111,8 +113,9 @@ const deliverySchema = z.object({
     ])
     .refine((value) => value >= 0, {
       message: 'O pagamento não pode ser negativo.',
-    }),
-  paymentType: paymentTypeSchema,
+    })
+    .optional(),
+  paymentType: paymentTypeSchema.optional(),
   ...billingAddressFields,
 });
 

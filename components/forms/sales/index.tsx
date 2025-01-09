@@ -122,10 +122,12 @@ export function SalesForm() {
   );
 
   const handleBackToForm = useCallback(() => {
+    const currentValues = form.getValues(); // Get all current form values
+    form.reset(currentValues); // Reset form with current values
     setCurrentStep('details');
     setDocumentData(null);
     setPdfError(null);
-  }, []);
+  }, [form]);
 
   const handleFillTestData = useCallback(() => {
     fillFormWithTestData(form);

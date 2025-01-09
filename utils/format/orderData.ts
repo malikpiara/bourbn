@@ -1,8 +1,13 @@
 import { FormValues } from '@/lib/schema';
-import { Customer, DocumentData } from '@/types/document';
+import { Customer, DocumentData, PaymentInfo } from '@/types/document';
 import { format } from 'date-fns';
 import { pt } from 'date-fns/locale';
-import { COMPANY_INFO, VAT_RATE, DATE_FORMAT } from '@/lib/constants';
+import {
+  COMPANY_INFO,
+  VAT_RATE,
+  DATE_FORMAT,
+  PAYMENT_TYPES,
+} from '@/lib/constants';
 import { formatNIF, formatPostalCode } from './form';
 import { formatPhoneNumber } from 'react-phone-number-input';
 
@@ -14,7 +19,11 @@ export const formatOrderData = (values: FormValues): DocumentData => {
     }
 
     const orderItems = values.tableEntries.map((entry) => {
-      const total = entry.quantity * entry.unitPrice;
+      const quantity = Number(entry.quantity);
+      const unitPrice = entry.unitPrice; // Always a number now
+
+      const total = entry.quantity * unitPrice;
+
       if (isNaN(total)) {
         throw new Error('Erro ao calcular o total do produto.');
       }
@@ -23,7 +32,7 @@ export const formatOrderData = (values: FormValues): DocumentData => {
         ref: entry.ref,
         description: entry.description,
         quantity: entry.quantity,
-        unitPrice: entry.unitPrice,
+        unitPrice,
         total,
       };
     });
@@ -50,6 +59,8 @@ export const formatOrderData = (values: FormValues): DocumentData => {
       },
     };
 
+    let payments: PaymentInfo[] = [];
+
     if (values.salesType === 'delivery') {
       customerData.address = {
         address1: values.address1,
@@ -73,6 +84,31 @@ export const formatOrderData = (values: FormValues): DocumentData => {
           hasElevator: false,
         };
       }
+
+      // Only add payments if we have valid values
+      if (
+        typeof values.firstPayment === 'number' &&
+        values.paymentType &&
+        values.date
+      ) {
+        payments.push({
+          amount: values.firstPayment,
+          type: values.paymentType,
+          date: format(values.date, DATE_FORMAT, { locale: pt }),
+          label:
+            PAYMENT_TYPES.find((type) => type.value === values.paymentType)
+              ?.label || values.paymentType,
+        });
+      }
+
+      if (typeof values.secondPayment === 'number') {
+        payments.push({
+          amount: values.secondPayment,
+          type: 'delivery',
+          date: 'No acto de entrega',
+          label: '',
+        });
+      }
     }
 
     return {
@@ -87,6 +123,12 @@ export const formatOrderData = (values: FormValues): DocumentData => {
         vat: VAT_RATE,
         totalAmount,
         notes: values.notes || undefined,
+        ...(values.salesType === 'delivery' && {
+          firstPayment: values.firstPayment,
+          secondPayment: values.secondPayment,
+          paymentType: values.paymentType,
+          payments, // Add the formatted payments array
+        }),
       },
     };
   } catch (error) {

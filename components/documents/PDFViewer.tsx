@@ -98,9 +98,6 @@ const PDFViewer = ({ url, className }: PDFViewerProps) => {
   const handleTextSelection = useCallback(() => {
     const selection = window.getSelection();
 
-    // Log the selection to debug
-    console.log('Selection:', selection?.toString());
-
     if (selection && selection.toString().trim().length > 0) {
       // Make sure we're selecting text within the PDF document
       const range = selection.getRangeAt(0);
@@ -256,7 +253,7 @@ const PDFViewer = ({ url, className }: PDFViewerProps) => {
           }
         >
           {!error && !loading && (
-            <div key={key} className='animate-slide-fade '>
+            <div key={key} className='animate-slide-fade'>
               <Page
                 pageNumber={pageNumber}
                 renderTextLayer={true}

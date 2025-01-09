@@ -235,7 +235,7 @@ export const styles = StyleSheet.create({
   },
 
   paymentSection: {
-    marginTop: 10,
+    marginTop: 20,
     marginBottom: 30,
   },
   paymentTitle: {
@@ -281,6 +281,6 @@ export const styles = StyleSheet.create({
     fontSize: 10,
   },
   cellText: {
-    height: 8,
+    color: '#000000',
   },
 });

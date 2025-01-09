@@ -30,6 +30,13 @@ export interface OrderItem {
   total: number;
 }
 
+export interface PaymentInfo {
+  amount: number;
+  type: string;
+  date: string;
+  label: string;
+}
+
 export interface Order {
   id: string;
   storeId: string;
@@ -42,6 +49,7 @@ export interface Order {
   firstPayment?: number;
   secondPayment?: number;
   paymentType?: 'mbway' | 'cash' | 'card' | 'transfer';
+  payments?: PaymentInfo[];
 }
 
 // Main interface that combines all the above

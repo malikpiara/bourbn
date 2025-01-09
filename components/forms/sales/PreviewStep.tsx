@@ -5,6 +5,7 @@ import { OrderDocument } from '@/components/documents/OrderDocument';
 import { DirectSalesDocument } from '@/components/documents/DirectSales';
 import dynamic from 'next/dynamic';
 import { useEffect } from 'react';
+import { PAYMENT_TYPES } from '@/lib/constants';
 
 const PDFViewer = dynamic(() => import('@/components/documents/PDFViewer'), {
   ssr: false,
@@ -38,7 +39,7 @@ export const PreviewStep = ({
   const documentType = isDelivery ? 'Encomenda' : 'Venda Direta';
 
   return (
-    <div className='absolute inset-0 z-50 bg-white'>
+    <div className='absolute inset-0 z-50 bg-white overflow-hidden'>
       <div className='flex h-screen'>
         {/* Left side - Form content */}
         <div className='flex-grow p-8'>
@@ -90,6 +91,44 @@ export const PreviewStep = ({
                           €{documentData.order.totalAmount.toFixed(2)}
                         </dd>
                       </div>
+                      {isDelivery && (
+                        <>
+                          <div className='flex justify-between items-center gap-4'>
+                            <dt className='text-sm font-medium text-neutral-600'>
+                              Primeiro Pagamento
+                            </dt>
+                            <dd className='text-sm font-semibold text-neutral-900'>
+                              €
+                              {documentData.order.firstPayment?.toFixed(2) ||
+                                '0.00'}
+                            </dd>
+                          </div>
+                          <div className='flex justify-between items-center gap-4'>
+                            <dt className='text-sm font-medium text-neutral-600'>
+                              Segundo Pagamento
+                            </dt>
+                            <dd className='text-sm font-semibold text-neutral-900'>
+                              €
+                              {documentData.order.secondPayment?.toFixed(2) ||
+                                '0.00'}
+                            </dd>
+                          </div>
+                          {documentData.order.paymentType && (
+                            <div className='flex justify-between items-center gap-4'>
+                              <dt className='text-sm font-medium text-neutral-600'>
+                                Método de Pagamento
+                              </dt>
+                              <dd className='text-sm font-semibold text-neutral-900 uppercase'>
+                                {PAYMENT_TYPES.find(
+                                  (type) =>
+                                    type.value ===
+                                    documentData.order.paymentType
+                                )?.label || documentData.order.paymentType}
+                              </dd>
+                            </div>
+                          )}
+                        </>
+                      )}
                       {isDelivery && documentData.customer.address && (
                         <div className='flex justify-between items-start gap-4'>
                           <dt className='text-sm font-medium text-neutral-600'>
@@ -141,7 +180,7 @@ export const PreviewStep = ({
         </div>
 
         {/* Right side - PDF Preview */}
-        <div className='w-[750px] h-[1100px] shrink-0 bg-[#F6F3F0] p-8 flex items-center justify-center rounded-lg'>
+        <div className='w-[750px] h-screen shrink-0 bg-[#F6F3F0] p-8 flex items-center justify-center rounded-lg overflow-y-auto'>
           <BlobProvider document={<DocumentComponent {...documentData} />}>
             {({ url, loading }) => (
               <div className='h-full'>

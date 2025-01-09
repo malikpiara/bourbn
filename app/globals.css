@@ -46,6 +46,22 @@ body {
   font-family: var(--font-inter); /* Apply Lato globally */
 }
 
+body::selection {
+  background: rgba(250, 233, 157, 0.5); /* Light yellow */
+  color: #000;
+}
+
+body ::selection {
+  background: rgba(250, 233, 157, 0.5);
+  color: #000;
+}
+
+/* For Firefox */
+body ::-moz-selection {
+  background: rgba(250, 233, 157, 0.5);
+  color: #000;
+}
+
 /* Base fade-in animation for empty state and initial table */
 .animate-slide-fade {
   will-change: transform, opacity;

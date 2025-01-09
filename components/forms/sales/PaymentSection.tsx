@@ -53,9 +53,13 @@ export function PaymentSection({ form }: PaymentSectionProps) {
 
   // Initialize payments
   useEffect(() => {
-    const halfTotal = total / 2;
-    form.setValue('firstPayment', halfTotal);
-    form.setValue('secondPayment', halfTotal);
+    const currentFirstPayment = form.getValues('firstPayment');
+    const currentSecondPayment = form.getValues('secondPayment');
+    if (!currentFirstPayment && !currentSecondPayment) {
+      const halfTotal = total / 2;
+      form.setValue('firstPayment', halfTotal);
+      form.setValue('secondPayment', halfTotal);
+    }
   }, [total, form]);
 
   const handleSliderChange = (value: number[]) => {
@@ -104,7 +108,7 @@ export function PaymentSection({ form }: PaymentSectionProps) {
 
           {/* Payment Split Slider */}
           <div className='space-y-3'>
-            <Label className='text-sm text-muted-foreground'>
+            <Label className='text-muted-foreground'>
               Distribuição dos Pagamentos
             </Label>
             <div className='pt-4'>
@@ -113,9 +117,9 @@ export function PaymentSection({ form }: PaymentSectionProps) {
                 onValueChange={handleSliderChange}
                 max={100}
                 step={1}
-                className='mb-6'
+                className='mb-6 cursor-grab'
               />
-              <div className='flex justify-between text-sm text-muted-foreground'>
+              <div className='flex justify-between text-primary'>
                 <span>{sliderValue}%</span>
                 <span>{100 - sliderValue}%</span>
               </div>
@@ -140,11 +144,12 @@ export function PaymentSection({ form }: PaymentSectionProps) {
                 onChange={(e) => handlePaymentChange(e.target.value, true)}
               />
             </div>
-
             <Select
-              value={form.watch('paymentType')}
-              onValueChange={(value) =>
-                form.setValue('paymentType', value as any)
+              // @ts-expect-error: Temporary suppression of TypeScript error due to discriminated union type mismatch.
+              value={form.watch('paymentType') as FormValues['paymentType']}
+              // @ts-expect-error: Temporary suppression of TypeScript error. Will refactor to properly handle type narrowing.
+              onValueChange={(value: FormValues['paymentType']) =>
+                form.setValue('paymentType', value)
               }
             >
               <SelectTrigger className='w-full'>
